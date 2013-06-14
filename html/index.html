@@ -18,9 +18,9 @@
 				font-family: sans-serif;
 				font-size: 12px;
 			}
-			rect {
+/*			rect {
 				shape-rendering: crispEdges;
-			}
+			}*/
 		</style>
 	</head>
 	<body>
@@ -139,6 +139,8 @@
 							// TODO: this is messy and klugey: doesn't work if you change svg height and width
 							return h - (h / bins.length - 1) - i * (h / bins.length - 1);
 						},
+						rx: 5,
+						ry: 5,
 						width: function(d) {
 							return xScale(d.y);
 						},
