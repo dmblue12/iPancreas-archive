@@ -1,6 +1,6 @@
 #### NB: As of June 2013, I've started on a massive reworking of this project from the ground up.
 
-Copyright 2013 Jana E. Beck
+Copyright 2013 Jana E. Beck  
 Contact: jana.eliz.beck@gmail.com
 
 ## License
