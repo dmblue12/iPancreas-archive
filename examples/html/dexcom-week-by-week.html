@@ -14,13 +14,13 @@
 					  stroke: #000;
 					  shape-rendering: crispEdges;
 					}
-					.axis text {
-						font-family: sans-serif;
-						font-size: 12px;
-					}
-					rect {
-						shape-rendering: crispEdges;
-					}
+			text {
+				font-family: sans-serif;
+				font-size: 12px;
+			}
+/*			rect {
+				shape-rendering: crispEdges;
+			}*/
 		</style>
 	</head>
 	<body>
@@ -30,7 +30,7 @@
 					Dexcom Data: Week by Week
 				</p>
 				<div>
-					<h3 id="week-of"></h3>
+					<h4 id="week-of"></h4>
 					<div id="week-buttons" class="btn-group pull-right">
 						<button id="previous-week" class="btn disabled">Previous Week</button>
 						<button id="next-week" class="btn">Next Week</button>
@@ -39,8 +39,33 @@
 			</div>
 		</div>
 		<script type="text/javascript">
-			var margin = {top: 20, right: 10, bottom: 20, left: 70}
-			var pad = margin.left - margin.right
+			// for retrieving ISO 8601 week number
+			// from this Gist: https://gist.github.com/dblock/1081513
+			var getWeek = function( d ) { 
+				// Create a copy of this date object  
+				var target = new Date(d.valueOf());  
+				  
+				// ISO week date weeks start on monday so correct the day number  
+				//var dayNr = (d.getDay() + 6) % 7;
+				var dayNr = d.getDay();  
+				 
+				// Set the target to the thursday of this week so the target date is in the right year  
+				target.setDate(target.getDate() - dayNr + 3);  
+				 
+				// ISO 8601 states that week 1 is the week with january 4th in it  
+				var jan4 = new Date(target.getFullYear(), 0, 4);  
+				 
+				// Number of days between target date and january 4th  
+				var dayDiff = (target - jan4) / 86400000;    
+				 
+				// Calculate week number: Week 1 (january 4th) plus the    
+				// number of weeks between target date and january 4th    
+				var weekNr = 1 + Math.ceil(dayDiff / 7);    
+				 
+				return weekNr;
+			};
+			var margin = {top: 20, right: 10, bottom: 20, left: 70};
+			var pad = margin.left - margin.right;
 			var w = 840 - margin.left - margin.right;
 			var h = 440 - margin.top - margin.bottom;
 			// set up svg
@@ -60,19 +85,22 @@
 			d3.json("../dexcom.json", function(error, json) {
 				if (error) return console.warn(error);
 				readings = json["Readings"];
-				last_day = 0
-				var week = new Array();
+				last_week = "";
+				var week = new Object();
+				week.readings = new Array();
 				for (i = 0; i < readings.length; i++) {
 					dt = new Date(readings[i]["timestamp"]);
-					current_day = dt.getDay();
-					if ((last_day == 6) && (current_day != 6)) {
-						week_batches.push(week);
-						week = [readings[i]];
+					current_week = getWeek(dt);
+					if (last_week !== current_week) {
+						if (week.readings.length !== 0) {
+							week_batches.push(week);
+						}
+						week =  { weekof: dt.toLocaleDateString(), readings: [readings[i]]};
 					}
 					else {
-						week.push(readings[i]);
+						week.readings.push(readings[i]);
 					}
-					last_day = current_day;
+					last_week = current_week;
 				};
 				// first load of data
 				loadFirstWeek(weekIndex);
@@ -80,9 +108,10 @@
 
 			var loadFirstWeek = function(weekIndex) {
 				dataset = d3.layout.histogram()
-					.value(function(d) {return parseInt(d.blood_glucose); })
+					.value(function(d) { return parseInt(d.blood_glucose); })
 					.bins(d3.range(45, 405, 20))
-					(week_batches[weekIndex]);
+					(week_batches[weekIndex].readings);
+				$('#week-of').html("Week of " + week_batches[weekIndex].weekof);
 				xScale = d3.scale.linear()
 					.domain([0, d3.max(dataset, function(d) { return d.y; })])
 					.range([0, w]);
@@ -110,6 +139,8 @@
 							// TODO: this is messy and klugey: doesn't work if you change svg height and width
 							return h - (h / bins.length - 1) - i * (h / bins.length - 1);
 						},
+						rx: 5,
+						ry: 5,
 						width: function(d) {
 							return xScale(d.y);
 						},
@@ -148,7 +179,8 @@
 				dataset = d3.layout.histogram()
 					.value(function(d) {return parseInt(d.blood_glucose); })
 					.bins(d3.range(45, 405, 20))
-					(week_batches[weekIndex]);
+					(week_batches[weekIndex].readings);
+				$('#week-of').html("Week of " + week_batches[weekIndex].weekof);
 				// update scales
 				xScale.domain([0, d3.max(dataset, function(d) { return d.y; })])
 					.range([0, w]);
