@@ -1,6 +1,6 @@
 .DS_Store
-public/
 raw/
+web/
 *.pyc
 *.json
 d3.v3.min.js
