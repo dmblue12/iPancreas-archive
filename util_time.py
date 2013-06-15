@@ -1,9 +1,41 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, tzinfo
 
-def dexcom_to_ISO8601(t):
+class DexcomInternalTime(tzinfo):
+
+	def __init__(self, offset):
+		self.offset = offset
+
+	def utcoffset(self, dt):
+		return timedelta(hours=int(self.offset))
+
+	def dst(self, dt):
+		return timedelta(hours=int(self.offset))
+
+	def tzname(self, dt):
+		return "Dexcom Internal Time"
+
+class UTC(tzinfo):
+
+	def utcoffset(self, dt):
+		return timedelta(hours=0)
+
+	def dst(self, dt):
+		return timedelta(hours=0)
+
+	def tzname(self, dt):
+		return "UTC"
+
+def dexcom_to_ISO8601(t, offset = ""):
 	"""Translates string Dexcom Studio timestamp to ISO 8601 standard format UTC."""
 
-	pt = datetime.strptime(t, '%Y-%m-%d %H:%M:%S')
+	if offset != "":
+		dextime = DexcomInternalTime(offset)
+		pt = datetime.strptime(t, '%Y-%m-%d %H:%M:%S')
+		pt = pt.replace(tzinfo=dextime)
+		pt = pt.astimezone(UTC())
+
+	else:
+		pt = datetime.strptime(t, '%Y-%m-%d %H:%M:%S')
 
 	return pt.isoformat()
 
