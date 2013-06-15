@@ -14,6 +14,24 @@ class DexcomInternalTime(tzinfo):
 	def tzname(self, dt):
 		return "Dexcom Internal Time"
 
+class UserTime(tzinfo):
+
+	def __init__(self, offset, daylight = True):
+		self.offset = offset
+		self.daylight = daylight
+
+	def utcoffset(self, dt):
+		return timedelta(hours=int(self.offset))
+
+	def dst(self, dt):
+		if self.daylight:
+			return timedelta(hours=int(self.offset) + 1)
+		else:
+			return timedelta(hours=int(self.offset))
+
+	def tzname(self, dt):
+		return "User Time"
+
 class UTC(tzinfo):
 
 	def utcoffset(self, dt):
