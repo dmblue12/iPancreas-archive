@@ -46,8 +46,7 @@
 				var target = new Date(d.valueOf());  
 				  
 				// ISO week date weeks start on monday so correct the day number  
-				//var dayNr = (d.getDay() + 6) % 7;
-				var dayNr = d.getDay();  
+				var dayNr = (d.getDay() + 6) % 7;
 				 
 				// Set the target to the thursday of this week so the target date is in the right year  
 				target.setDate(target.getDate() - dayNr + 3);  
