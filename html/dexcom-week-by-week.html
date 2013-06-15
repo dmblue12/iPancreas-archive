@@ -87,7 +87,7 @@
 				var week = new Object();
 				week.readings = new Array();
 				for (i = 0; i < readings.length; i++) {
-					dt = new Date(readings[i]["timestamp"]);
+					dt = new Date(readings[i]["UTC_timestamp"]);
 					current_week = getWeek(dt);
 					if (last_week !== current_week) {
 						if (week.readings.length !== 0) {
@@ -221,16 +221,20 @@
 
 			// advance to next week of data
 			d3.select('#next-week').on('click', function() {
-				weekIndex += 1;
-				newWeek(weekIndex);
-				updateButton(weekIndex);
+				if (!($(this).hasClass('disabled'))) {				
+					weekIndex += 1;
+					newWeek(weekIndex);
+					updateButton(weekIndex);
+				}
 			});
 
 			// go back to previous week of data
 			d3.select('#previous-week').on('click', function() {
-				weekIndex -= 1;
-				newWeek(weekIndex);
-				updateButton(weekIndex);
+				if (!($(this).hasClass('disabled'))) {				
+					weekIndex -= 1;
+					newWeek(weekIndex);
+					updateButton(weekIndex);
+				}
 			});
 
 			var updateButton = function(weekIndex) {
