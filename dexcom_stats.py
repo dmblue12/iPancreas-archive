@@ -17,7 +17,7 @@ class DexcomStats():
 
 		self.readings = self.dexcom['Readings']
 
-		# of these, only using self.start_datae so far, but the rest could be potentially useful?
+		# of these, only using self.start_date so far, but the rest could be potentially useful?
 		self.start_time, self.start_date = util_time.get_start_time(self.calibrations[0]['timestamp'], 
 			self.readings[0]['timestamp'])
 
@@ -49,8 +49,6 @@ class DexcomStats():
 
 		current_date = self.start_date
 
-		dates = []
-
 		calibs = []
 
 		# loop through all calibrations and batch them by date
@@ -70,12 +68,24 @@ class DexcomStats():
 					calibs = []
 				# update current_date
 				current_date = util_time.increment_date(current_date)
+				if util_time.parse_timestamp(c['timestamp']).date() == current_date:
+					calibs.append(c)
+
+		# add final day's data
+		if calibs != []:
+			try:
+				self.days[current_date].calibrations = calibs
+			except KeyError as k2:
+				self.days[current_date] = DexcomDay()
+				self.days[current_date].calibrations = calibs
 
 		# reset current_date to beginning
 		current_date = self.start_date
 
 		# store last most recent timestamp in order to check for continuity between meter readings
 		last_time = util_time.parse_timestamp(self.readings[0]['timestamp'])
+
+		dates = []
 
 		readings = []
 
@@ -98,7 +108,7 @@ class DexcomStats():
 							# in particular, if date has no calibrations, this could arise
 							try:
 								self.days[current_date].continuous = False
-							except KeyError as k2:
+							except KeyError as k3:
 								self.days[current_date] = DexcomDay()
 								self.days[current_date].continuous = False
 							# store and reinitalize segment when delta is greater than 6
@@ -122,7 +132,7 @@ class DexcomStats():
 					# in particular, if date has no calibrations, this could arise
 					try:
 						self.days[current_date].readings = readings
-					except KeyError as k3:
+					except KeyError as k4:
 						self.days[current_date] = DexcomDay()
 						self.days[current_date].readings = readings
 					if not self.days[current_date].continuous:
@@ -135,13 +145,28 @@ class DexcomStats():
 				dates.append(current_date)
 				# udpate current_date
 				current_date = util_time.increment_date(current_date)
+				if util_time.parse_timestamp(r['timestamp']).date() == current_date:
+					readings.append(r)
+
+		# add final day's data
+		dates.append(current_date)
+		if readings != []:
+			try:
+				self.days[current_date].readings = readings
+			except KeyError as k5:
+				self.days[current_date] = DexcomDay()
+				self.days[current_date].readings = readings
+			if not self.days[current_date].continuous:
+				self.days[current_date].continuous_segments.append(segment)
+			else:
+				self.days[current_date].continuous_segments.append(readings)
 
 		# must remain here because of chicken/egg problem with calling DexcomDay._times()
 		for date in dates:
 			try:
 				d = self.days[date]
 				d._times()
-			except KeyError as k4:
+			except KeyError as k6:
 				pass
 
 	def crunch_all(self):
@@ -266,17 +291,21 @@ class DexcomDay():
 		"""Fill in start and end times and dates."""
 
 		# just in case a calibration timestamp happens to occur before or after the first or last CGM reading of the day
-		if len(self.calibrations) != 0:
+		if len(self.calibrations) != 0 and len(self.readings) != 0:
 			self.start_time, self.date = util_time.get_start_time(self.calibrations[0]['timestamp'], 
 				self.readings[0]['timestamp'])
-
 			self.end_time = util_time.get_end_time(self.calibrations[-1]['timestamp'], 
 				self.readings[-1]['timestamp'])
-
-		else:
+		elif len(self.readings) != 0:
 			self.start_time = util_time.parse_timestamp(self.readings[0]['timestamp'])
 			self.date = self.start_time.date()
 			self.end_time = util_time.parse_timestamp(self.readings[-1]['timestamp'])
+		else:
+			self.start_time = util_time.parse_timestamp(self.calibrations[0]['timestamp'])
+			self.date = self.start_time.date()
+			print str(self.date) + " has (a) calibration(s) but no CGM readings."
+			print
+			self.end_time = util_time.parse_timestamp(self.calibrations[0]['timestamp'])
 
 	def calculate_GVI_and_PGS(self):
 		"""Calculate the glycemic variability index (GVI) for the given day."""
@@ -312,7 +341,7 @@ class DexcomDay():
 		print "Continuous: " + str(self.continuous)
 		print "No. of continuous segments = " + str(len(self.continuous_segments))
 		print "Weighted average of Glycemic Variability Index: " + "%0.2f" %self.gvi
-		print "Patient Glycemic Status: " + "%0.2f" %self.pgs
+		print "Patient Glycemic Status: " + "%0.1f" %self.pgs
 		print
 
 def main():
