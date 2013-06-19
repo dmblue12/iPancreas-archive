@@ -69,10 +69,10 @@
 			var h = 440 - margin.top - margin.bottom;
 			// set up svg
 			var svg = d3.select("#main")
-				.append("svg")
+				.append("svg:svg")
 				.attr("width", w + margin.left + margin.right)
 				.attr("height", h + margin.top + margin.bottom)
-				.append("g")
+				.append("svg:g")
 				.attr("transform", "translate(" + pad + "," + margin.top + ")");
 			var dataset;
 			var xScale;
@@ -123,7 +123,7 @@
 				svg.selectAll("rect")
 					.data(dataset)
 					.enter()
-					.append("rect")
+					.append("svg:rect")
 					// attributes that don't need updated
 					.attr({
 						rx: 5,
@@ -157,11 +157,11 @@
 							}
 						}
 					});
-				svg.append("g")
+				svg.append("svg:g")
 					.attr("class", "y axis")
 					.call(yAxis);
 				// y-axis label
-				svg.append("text")
+				svg.append("svg:text")
 					.attr("class", "y label")
 					.attr("text-anchor", "middle")
 					.attr("y", -pad)
@@ -169,6 +169,91 @@
 					.attr("dy", ".75em")
 					.attr("transform", "rotate(-90)")
 					.text("Blood Glucose in mg/dL");
+				// def linear gradient for legend: blue
+				blueLinearDef = svg.append("svg:defs")
+					.append("svg:linearGradient")
+					.attr({
+						id: "blueLinear",
+						x1: "0%",
+						y1: "0%",
+						x2: "100%",
+						y2: "0%",
+						spreadMethod: "pad"
+					});
+				blueLinearDef.append("svg:stop")
+					.attr("offset", "0%")
+					.attr("stop-color", "#0000FF")
+					.attr("stop-opacity", "1");
+				blueLinearDef.append("svg:stop")
+					.attr("offset", "100%")
+					.attr("stop-color", "#000000")
+					.attr("stop-opacity", "1");
+				// def linear gradient for legend: red
+				redLinearDef = svg.append("svg:defs")
+					.append("svg:linearGradient")
+					.attr({
+						id: "redLinear",
+						x1: "0%",
+						y1: "0%",
+						x2: "100%",
+						y2: "0%",
+						spreadMethod: "pad"
+					});
+				redLinearDef.append("svg:stop")
+					.attr("offset", "0%")
+					.attr("stop-color", "#FF0000")
+					.attr("stop-opacity", "1");
+				redLinearDef.append("svg:stop")
+					.attr("offset", "100%")
+					.attr("stop-color", "#000000")
+					.attr("stop-opacity", "1");
+				// TODO: get rid of magic numbers here determining widths and heights of things
+				// add group for target range legend
+				legendXPos = w - (pad - margin.right) - (pad + 40);
+				targetLegend = svg.append("svg:g")
+					.attr({
+						transform: "translate(" + legendXPos + "," + 0 + ")",
+						width: 160,
+						height: 60
+					});
+				// add gradient square for target range legend
+				targetLegend.append("svg:rect")
+					.attr("x", 0)
+					.attr("y", 5)
+					.attr("rx", 5)
+					.attr("ry", 5)
+					.attr("width", 160)
+					.attr("height", 20)
+					.attr("stroke", "#DCDCDC")
+					.attr("stroke-width", 3)
+					.style("fill", "url(#blueLinear)");
+				//add legend text: blue
+				targetLegend.append("svg:text")
+					.attr("x", 80)
+					.attr("y", 16)
+					.attr("text-anchor", "middle")
+					.attr("dominant-baseline", "middle")
+					.attr("fill", "#DCDCDC")
+					.text("In Target Range");
+				// add gradient square for out of target range legend
+				targetLegend.append("svg:rect")
+					.attr("x", 0)
+					.attr("y", 35)
+					.attr("rx", 5)
+					.attr("ry", 5)
+					.attr("width", 160)
+					.attr("height", 20)
+					.attr("stroke", "#DCDCDC")
+					.attr("stroke-width", 3)
+					.style("fill", "url(#redLinear)");
+				//add legend text: red
+				targetLegend.append("svg:text")
+					.attr("x", 80)
+					.attr("y", 46)
+					.attr("text-anchor", "middle")
+					.attr("dominant-baseline", "middle")
+					.attr("fill", "#DCDCDC")
+					.text("Out of Target Range");
 			};
 
 			var newWeek = function(weekIndex) {
