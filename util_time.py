@@ -6,7 +6,10 @@ class DexcomInternalTime(tzinfo):
 		self.offset = offset
 
 	def utcoffset(self, dt):
-		return timedelta(hours=int(self.offset))
+		if self.offset:
+			return timedelta(hours=int(self.offset))
+		else:
+			return None
 
 	def dst(self, dt):
 		return timedelta(hours=int(self.offset))
@@ -50,7 +53,11 @@ def dexcom_to_ISO8601(t, offset = ""):
 		dextime = DexcomInternalTime(offset)
 		pt = datetime.strptime(t, '%Y-%m-%d %H:%M:%S')
 		pt = pt.replace(tzinfo=dextime)
-		pt = pt.astimezone(UTC())
+		# if no offset was given for translating Dexcom-internal timestamp to UTC, return "" for the UTC_timestamp
+		try:
+			pt = pt.astimezone(UTC())
+		except ValueError as v1:
+			return ""
 
 	else:
 		pt = datetime.strptime(t, '%Y-%m-%d %H:%M:%S')
