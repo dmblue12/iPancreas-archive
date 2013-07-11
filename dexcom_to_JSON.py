@@ -43,9 +43,10 @@ class StudioReader():
                 numeric = "39"
             elif numeric == "High":
                 numeric = "401"
+            int_numeric = int(numeric)
             readings.append({"timestamp": util_time.dexcom_to_ISO8601(row[3]),
                 "UTC_timestamp": util_time.dexcom_to_ISO8601(row[2], self.offset),
-                "blood_glucose": numeric})
+                "blood_glucose": int_numeric})
 
     def _get_calibs(self):
         """Read blood glucose calibrations and timestamps from Dexcom export file and save in a dict."""
@@ -63,9 +64,10 @@ class StudioReader():
             elif numeric == "High":
                 numeric = "401"
             if numeric != "":
+                int_numeric = int(numeric)
                 calibs.append({"timestamp": util_time.dexcom_to_ISO8601(row[6]),
                     "UTC_timestamp": util_time.dexcom_to_ISO8601(row[5], self.offset),
-                    "blood_glucose": numeric})
+                    "blood_glucose": int_numeric})
 
     def create_JSON(self):
         """Transfer BG objects to a JSON file."""

@@ -324,11 +324,10 @@ class DexcomDay():
 			self.gvi += (segment_GVI[0] / total) * segment_GVI[1]
 
 		if len(self.readings) != 0:
-			# next three lines create an array of int-typed BG readings
-			# TODO: consider shifting to int-typed BG readings in DexcomStats.split()
+			# next three lines create an array of just the BG readings
 			readings = []
 			for reading in self.readings:
-				readings.append(int(reading['blood_glucose']))
+				readings.append(reading['blood_glucose'])
 			# TODO: don't hardcode the target range values!
 			self.pgs = PGS(readings, (65, 140), self.gvi).get_PGS()
 
