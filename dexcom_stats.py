@@ -187,6 +187,36 @@ class GVI():
 	"""Glycemic Variability Index."""
 	"""As described here: http://www.diabetesmine.com/2012/11/a-new-view-of-glycemic-variability-how-long-is-your-line.html"""
 
+	def __init__(self, segments):
+
+		# an array of continuous segments of blood glucose values
+		self.segments = segments
+
+		# total number of blood glucose values in the arbitrary time period represented by all segments in self.segments
+		self.total = float(sum(len(segment) for segment in self.segments))
+
+	def calculate_weighted_GVI(self):
+		"""Calculate the weighted GVI for an arbitrary time unit represented by an array of segments."""
+
+		segment_GVIs = []
+		weighted_gvi = 0
+
+		# get GVI for each continuous segment
+		for segment in self.segments:
+			if len(segment) > 1:
+				gvi = GVISegment(segment)
+				segment_GVIs.append((len(segment), gvi.get_GVI()))
+
+		# calculate weighted average of segment GVIs; weighted by length of segment
+		for segment_GVI in segment_GVIs:
+			weighted_gvi += (segment_GVI[0] / self.total) * segment_GVI[1]
+
+		return weighted_gvi
+
+class GVISegment():
+	"""A continuous segment of blood glucose values, where continuous <= 6 minutes apart."""
+	"""A continuous segment is the minimal unit over which a GVI can be calculated."""
+
 	def __init__(self, segment):
 
 		# a series of continuous (<= 6 minutes apart) blood glucose readings
@@ -310,18 +340,9 @@ class DexcomDay():
 	def calculate_GVI_and_PGS(self):
 		"""Calculate the glycemic variability index (GVI) for the given day."""
 
-		segment_GVIs = []
+		gvi = GVI(self.continuous_segments)
 
-		# get GVI for each continuous segment
-		for segment in self.continuous_segments:
-			if len(segment) > 1:
-				gvi = GVI(segment)
-				segment_GVIs.append((len(segment), gvi.get_GVI()))
-
-		# calculate weighted average of segment GVIs; weighted by length of segment
-		for segment_GVI in segment_GVIs:
-			total = float(len(self.readings))
-			self.gvi += (segment_GVI[0] / total) * segment_GVI[1]
+		self.gvi = gvi.calculate_weighted_GVI()
 
 		if len(self.readings) != 0:
 			# next three lines create an array of just the BG readings
