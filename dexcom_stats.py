@@ -33,13 +33,14 @@ class DexcomStats():
 		# following four lines allow for looping through self.days dict in sequential date order
 		self.dates = []
 		for day in self.days.values():
-			# TODO: figure out why (only sometimes?) a DexcomDay is getting added to self.days with '' for the date
-			# maybe it's current day? that seems to be the only thing missing a summary in the results
 			if type(day.date) != type('abc'):
 				self.dates.append(day.date)
 			else:
 				print "Empty Date!"
 				day.print_summary()
+			# populate each day's just_readings array
+			day.just_readings = [reading['blood_glucose'] for reading in day.readings]
+
 		self.dates.sort()
 
 		self.crunch_all()
@@ -286,7 +287,6 @@ class PGS():
 		for reading in self.readings:
 			if reading >= target_min and reading <= target_max:
 				in_range += 1
-
 		return in_range / total
 
 	def get_PGS(self):
@@ -310,6 +310,9 @@ class DexcomDay():
 		self.continuous = True
 
 		self.continuous_segments = []
+
+		# an array of just blood glucose values
+		self.just_readings = []
 
 		# Glycemic Variability Index
 		self.gvi = 0
@@ -344,13 +347,9 @@ class DexcomDay():
 
 		self.gvi = gvi.calculate_weighted_GVI()
 
-		if len(self.readings) != 0:
-			# next three lines create an array of just the BG readings
-			readings = []
-			for reading in self.readings:
-				readings.append(reading['blood_glucose'])
+		if len(self.just_readings) != 0:
 			# TODO: don't hardcode the target range values!
-			self.pgs = PGS(readings, (65, 140), self.gvi).get_PGS()
+			self.pgs = PGS(self.just_readings, (65, 140), self.gvi).get_PGS()
 
 	def print_summary(self):
 		"""Print a summary of the data stored for this day."""
