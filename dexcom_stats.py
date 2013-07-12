@@ -43,7 +43,7 @@ class DexcomStats():
 
 		self.dates.sort()
 
-		self.crunch_all()
+		self._crunch_all()
 
 	def _split(self):
 		"""Split data into daily batches."""
@@ -170,14 +170,25 @@ class DexcomStats():
 			except KeyError as k6:
 				pass
 
-	def crunch_all(self):
+	def _crunch_all(self):
 		"""Call all statistic-calculating methods for each day with data."""
 
 		for date in self.dates:
 			d = self.days[date]
 			d.calculate_GVI_and_PGS()
 
-	def print_summaries(self):
+	def print_day_JSON(self):
+		"""Call DexcomDay.to_JSON() method for each day and dump to a JSON file."""
+
+		days_json = {'Days': []}
+
+		for date in self.dates:
+			days_json['Days'].append(self.days[date].to_JSON())
+
+		with open("dexcom_days.json", 'w') as f:
+			print >> f, json.dumps(days_json, sort_keys=True, indent=4, separators=(',', ': '))
+
+	def print_daily_summaries(self):
 		"""Call DexcomDay.print_summary() method for each day with data."""
 
 		for date in self.dates:
@@ -328,7 +339,7 @@ class DexcomDay():
 			self.start_time, self.date = util_time.get_start_time(self.calibrations[0]['timestamp'], 
 				self.readings[0]['timestamp'])
 			self.end_time = util_time.get_end_time(self.calibrations[-1]['timestamp'], 
-				self.readings[-1]['timestamp'])
+				self.readings[-1]['timestamp'])[0]
 		elif len(self.readings) != 0:
 			self.start_time = util_time.parse_timestamp(self.readings[0]['timestamp'])
 			self.date = self.start_time.date()
@@ -336,6 +347,7 @@ class DexcomDay():
 		else:
 			self.start_time = util_time.parse_timestamp(self.calibrations[0]['timestamp'])
 			self.date = self.start_time.date()
+			print
 			print str(self.date) + " has (a) calibration(s) but no CGM readings."
 			print
 			self.end_time = util_time.parse_timestamp(self.calibrations[0]['timestamp'])
@@ -350,6 +362,24 @@ class DexcomDay():
 		if len(self.just_readings) != 0:
 			# TODO: don't hardcode the target range values!
 			self.pgs = PGS(self.just_readings, (65, 140), self.gvi).get_PGS()
+
+	def to_JSON(self):
+		"""Bundle data and stats into JSON form."""
+
+		day_dict = {
+			'Date': self.date.isoformat(),
+			'Calibrations': self.calibrations,
+			'Timestamped Readings': self.readings,
+			'Start Time': self.start_time.isoformat(),
+			'End Time': self.end_time.isoformat(),
+			'Continuous': self.continuous,
+			'Continuous Segments': self.continuous_segments,
+			'Blood Glucose Values': self.just_readings,
+			'Glycemic Variability Index': float("{:0.2f}".format(self.gvi)),
+			'Patient Glycemic Status': float("{:0.1f}".format(self.pgs))
+					}
+
+		return day_dict
 
 	def print_summary(self):
 		"""Print a summary of the data stored for this day."""
@@ -371,7 +401,8 @@ def main():
     args = parser.parse_args()
 
     d = DexcomStats(args.dex_name)
-    d.print_summaries()
+    d.print_day_JSON()
+    # d.print_daily_summaries()
 
 if __name__ == '__main__':
 	main()
