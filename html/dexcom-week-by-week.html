@@ -40,29 +40,6 @@
 			</div>
 		</div>
 		<script type="text/javascript">
-			// for retrieving ISO 8601 week number
-			// from this Gist: https://gist.github.com/dblock/1081513
-			var getWeek = function( d ) { 
-				// Create a copy of this date object  
-				var target = new Date(d.valueOf());  
-				  
-				// ISO week date weeks start on monday so correct the day number  
-				var dayNr = (d.getDay() + 6) % 7;
-				 
-				// Set the target to the thursday of this week so the target date is in the right year  
-				target.setDate(target.getDate() - dayNr + 3);  
-				 
-				// ISO 8601 states that week 1 is the week with january 4th in it  
-				var jan4 = new Date(target.getFullYear(), 0, 4);  
-				 
-				// Number of days between target date and january 4th  
-				var dayDiff = (target - jan4) / 86400000;    
-				 
-				// Calculate week number: Week 1 (january 4th) plus the number of weeks between target date and january 4th    
-				var weekNr = 1 + Math.ceil(dayDiff / 7);    
-				 
-				return weekNr;
-			};
 			var margin = {top: 20, right: 10, bottom: 20, left: 70};
 			var pad = margin.left - margin.right;
 			var w = 780 - margin.left - margin.right;
@@ -78,42 +55,24 @@
 			var xScale;
 			var yScale;
 			var yAxis;
-			var week_batches = new Array();
-			var weekIndex = 0;
+			var currentWeek;
 
-			d3.json("../dexcom.json", function(error, json) {
-				if (error) return console.warn(error);
-				readings = json["Readings"];
-				last_week = "";
-				var week = new Object();
-				week.readings = new Array();
-				for (i = 0; i < readings.length; i++) {
-					dt = new Date(readings[i]["UTC_timestamp"]);
-					current_week = getWeek(dt);
-					if (last_week !== current_week) {
-						if (week.readings.length !== 0) {
-							week_batches.push(week);
-						}
-						week =  { weekof: dt.toLocaleDateString(), readings: [readings[i]]};
-					}
-					else {
-						week.readings.push(readings[i]);
-					}
-					last_week = current_week;
-				};
-				// first load of data
-				loadFirstWeek(weekIndex);
+			d3.json("../dexcom_weeks.json", function(error, json) {
+				if (error) { return console.warn(error); }
+				weeks = json["Weeks"];
+				currentWeek = weeks[0];
+				loadFirstWeek(currentWeek);
 			});
 
-			var loadFirstWeek = function(weekIndex) {
+			var loadFirstWeek = function(currentWeek) {
 				yScale = d3.scale.linear()
 					.domain([20, 420])
 					.range([h, 0]);
 				dataset = d3.layout.histogram()
-					.value(function(d) { return parseInt(d.blood_glucose); })
+					.value(function(d) { return parseInt(d); })
 					.bins(yScale.ticks(20))
-					(week_batches[weekIndex].readings);
-				$('#week-of').html("Week of " + week_batches[weekIndex].weekof);
+					(currentWeek['Blood Glucose Values']);
+				$('#week-of').html("Week of " + currentWeek['Start Date']);
 				xScale = d3.scale.linear()
 					.domain([0, d3.max(dataset, function(d) { return d.y; })])
 					.range([0, w]);
@@ -256,13 +215,13 @@
 					.text("Out of Target Range");
 			};
 
-			var newWeek = function(weekIndex) {
+			var newWeek = function(currentWeek) {
 				// load new week of data into histogram layout
 				dataset = d3.layout.histogram()
-					.value(function(d) {return parseInt(d.blood_glucose); })
+					.value(function(d) {return parseInt(d); })
 					.bins(yScale.ticks(19))
-					(week_batches[weekIndex].readings);
-				$('#week-of').html("Week of " + week_batches[weekIndex].weekof);
+					(currentWeek['Blood Glucose Values']);
+				$('#week-of').html("Week of " + currentWeek['Start Date']);
 				// update scales
 				xScale.domain([0, d3.max(dataset, function(d) { return d.y; })])
 					.range([0, w]);
@@ -299,30 +258,32 @@
 
 			// advance to next week of data
 			d3.select('#next-week').on('click', function() {
-				if (!($(this).hasClass('disabled'))) {				
-					weekIndex += 1;
-					newWeek(weekIndex);
-					updateButton(weekIndex);
+				if (!($(this).hasClass('disabled'))) {
+					var newIndex = weeks.indexOf(currentWeek) + 1;
+					currentWeek = weeks[newIndex];
+					newWeek(currentWeek);
+					updateButton(newIndex);
 				}
 			});
 
 			// go back to previous week of data
 			d3.select('#previous-week').on('click', function() {
-				if (!($(this).hasClass('disabled'))) {				
-					weekIndex -= 1;
-					newWeek(weekIndex);
-					updateButton(weekIndex);
+				if (!($(this).hasClass('disabled'))) {
+					var newIndex = weeks.indexOf(currentWeek) - 1;
+					currentWeek = weeks[newIndex];
+					newWeek(currentWeek);
+					updateButton(newIndex);
 				}
 			});
 
 			var updateButton = function(weekIndex) {
-				if ((weekIndex > 0) && (weekIndex < week_batches.length - 1)) {
+				if ((weekIndex > 0) && (weekIndex < weeks.length - 1)) {
 					$('#week-buttons button').removeClass('disabled');
 				}
 				else if (weekIndex == 0) {
 					$('#previous-week').addClass('disabled');
 				}
-				else if (weekIndex == week_batches.length -1) {
+				else if (weekIndex == weeks.length -1) {
 					$('#next-week').addClass('disabled');
 				}
 			};
