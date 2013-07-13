@@ -8,7 +8,7 @@ import util_time
 class DexcomStats():
 	"""Compute summary statistics for a Dexcom JSON file."""
 
-	def __init__(self, dex):
+	def __init__(self, dex, options):
 
 		with open(dex, 'rb') as f:
 			self.dexcom = json.load(f)
@@ -24,13 +24,25 @@ class DexcomStats():
 		self.end_time, self.end_date = util_time.get_end_time(self.calibrations[-1]['timestamp'], 
 			self.readings[-1]['timestamp'])
 
-		# dict of DexcomDay objects, keyed by Python date()
+		# dict of DexcomDay objects, keyed by Python datetime.date()
 		self.days = {}
 
-		# method to split data into DexcomDay objects
-		self._split()
+		# dict of DexcomWeek objects, keyed by Python datetime.date().isocalendar()[1] (= ISO week number)
+		self.weeks = {}
 
-		# following four lines allow for looping through self.days dict in sequential date order
+		# dict of DexcomMonth objects, keyed by Python datetime.month
+		self.months = {}
+
+		# dict of DexcomYear objects, keyed by Python datetime.year
+		self.years = {}
+
+		# dict of all batched objects
+		self.units = {'days': self.days}
+
+		# method to split data into DexcomDay objects
+		self._split_by_day()
+
+		# following lines allow for looping through self.days dict in sequential date order
 		self.dates = []
 		for day in self.days.values():
 			if type(day.date) != type('abc'):
@@ -43,9 +55,24 @@ class DexcomStats():
 
 		self.dates.sort()
 
+		if options['week']:
+			# method to split data into DexcomWeek objects
+			self._split_by_week()
+			self.units['weeks'] = self.weeks
+
+		if options['month']:
+			# method to split data into DexcomMonth objects
+			self._split_by_month()
+			self.units['months'] = self.months
+
+		if options['year']:
+			# method to split data into DexcomYear objects
+			self._split_by_year()
+			self.units['years'] = self.years
+
 		self._crunch_all()
 
-	def _split(self):
+	def _split_by_day(self):
 		"""Split data into daily batches."""
 
 		current_date = self.start_date
@@ -170,6 +197,145 @@ class DexcomStats():
 			except KeyError as k6:
 				pass
 
+	def _split_by_week(self):
+		"""Split data into weekly batches."""
+
+		last_week = self.dates[0].isocalendar()[1]
+
+		week = DexcomWeek()
+
+		for day in self.dates:
+			current_week = day.isocalendar()[1]
+			current_day = self.days[day]
+
+			if current_week != last_week:
+				# crunch data on just concluded week
+				self.weeks[util_time.parse_timestamp(week.readings[0]['timestamp'])] = week
+				self._parse_continuous(week)
+				week._times()
+				week.calculate_GVI_and_PGS()
+
+				# update last week
+				last_week = current_week
+				
+				# initialize new week
+				week = DexcomWeek()
+				week.calibrations.extend(current_day.calibrations)
+				week.readings.extend(current_day.readings)
+				week.just_readings.extend(current_day.just_readings)
+
+			elif current_week == last_week:
+				week.calibrations.extend(current_day.calibrations)
+				week.readings.extend(current_day.readings)
+				week.just_readings.extend(current_day.just_readings)
+		else:
+			self.weeks[util_time.parse_timestamp(week.readings[0]['timestamp'])] = week
+			self._parse_continuous(week)
+			week._times()
+			week.calculate_GVI_and_PGS()
+
+	def _split_by_month(self):
+		"""Split data into monthly batches."""
+
+		last_month = self.dates[0].month
+
+		month = DexcomMonth()
+
+		for day in self.dates:
+			current_month = day.month
+			current_day = self.days[day]
+			
+			if current_month != last_month:
+				# crunch data on just concluded month
+				self.months[util_time.parse_timestamp(month.readings[0]['timestamp'])] = month
+				self._parse_continuous(month)
+				month._times()
+				month.calculate_GVI_and_PGS()
+
+				# update last month
+				last_month = current_month
+				
+				# initialize new month
+				month = DexcomMonth()
+				month.calibrations.extend(current_day.calibrations)
+				month.readings.extend(current_day.readings)
+				month.just_readings.extend(current_day.just_readings)
+
+			elif current_month == last_month:
+				month.calibrations.extend(current_day.calibrations)
+				month.readings.extend(current_day.readings)
+				month.just_readings.extend(current_day.just_readings)
+		else:
+			self.months[util_time.parse_timestamp(month.readings[0]['timestamp'])] = month
+			self._parse_continuous(month)
+			month._times()
+			month.calculate_GVI_and_PGS()
+
+	def _split_by_year(self):
+		"""Split data into yearly batches."""
+
+		last_year = self.dates[0].year
+
+		year = DexcomYear()
+
+		for day in self.dates:
+			current_year = day.year
+			current_day = self.days[day]
+			
+			if current_year != last_year:
+				# crunch data on just concluded year
+				self.years[last_year] = year
+				self._parse_continuous(year)
+				year._times()
+				year.calculate_GVI_and_PGS()
+
+				# update last year
+				last_year = current_year
+				
+				# initialize new year
+				year = DexcomYear()
+				year.calibrations.extend(current_day.calibrations)
+				year.readings.extend(current_day.readings)
+				year.just_readings.extend(current_day.just_readings)
+
+			elif current_year == last_year:
+				year.calibrations.extend(current_day.calibrations)
+				year.readings.extend(current_day.readings)
+				year.just_readings.extend(current_day.just_readings)
+		else:
+			self.years[current_year] = year
+			self._parse_continuous(year)
+			year._times()
+			year.calculate_GVI_and_PGS()
+
+	def _parse_continuous(self, unit):
+		"""Parse continuous segments of blood glucose readings for arbitrary (non-day) time batches (week, month, year)."""
+
+		last_time = util_time.parse_timestamp(unit.readings[0]['timestamp'])
+
+		segment = []
+
+		for r in unit.readings:
+			# update current time
+			current_time = util_time.parse_timestamp(r['timestamp'])
+			# triggered all but first run of loop
+			if last_time < current_time:
+				delta = current_time - last_time
+				if util_time.compare_timedelta_minutes(delta, 6, '>'):
+					unit.continuous = False
+					unit.continuous_segments.append(segment)
+					segment = [r]
+				else:
+					segment.append(r)
+			# only triggered during first run of loop
+			elif last_time == current_time:
+				segment.append(r)
+			# update last time
+			last_time = current_time
+
+		if len(segment) > 1:
+			unit.continuous_segments.append(segment)
+
 	def _crunch_all(self):
 		"""Call all statistic-calculating methods for each day with data."""
 
@@ -188,12 +354,29 @@ class DexcomStats():
 		with open("dexcom_days.json", 'w') as f:
 			print >> f, json.dumps(days_json, sort_keys=True, indent=4, separators=(',', ': '))
 
+	def print_unit_JSON(self, unit):
+		"""Call DexcomX.toJSON() method for each unit and dump to a JSON file."""
+
+		json_dict = {unit.capitalize(): []}
+
+		for u in sorted(self.units[unit].iteritems()):
+			json_dict[unit.capitalize()].append(u[1].to_JSON())
+
+		with open("dexcom_%s.json" %unit, 'w') as f:
+			print >> f, json.dumps(json_dict, separators=(',', ':'))
+
 	def print_daily_summaries(self):
 		"""Call DexcomDay.print_summary() method for each day with data."""
 
 		for date in self.dates:
 			d = self.days[date]
 			d.print_summary()
+
+	def print_unit_summaries(self, unit):
+		"""Call DexcomX.print_summary() method for each unit with data."""
+
+		for unit in sorted(self.units[unit].iteritems()):
+			unit[1].print_summary()
 
 class GVI():
 	"""Glycemic Variability Index."""
@@ -364,7 +547,7 @@ class DexcomDay():
 			self.pgs = PGS(self.just_readings, (65, 140), self.gvi).get_PGS()
 
 	def to_JSON(self):
-		"""Bundle data and stats into JSON form."""
+		"""Bundle daily data and stats into JSON form."""
 
 		day_dict = {
 			'Date': self.date.isoformat(),
@@ -393,16 +576,130 @@ class DexcomDay():
 		print "Patient Glycemic Status: " + "%0.1f" %self.pgs
 		print
 
+class DexcomWeek(DexcomDay):
+	"""A week of Dexcom data."""
+
+	def to_JSON(self):
+		"""Bundle weekly data and stats into JSON form."""
+
+		week_dict = {
+			'Week': self.date.isocalendar()[1],
+			'Calibrations': self.calibrations,
+			'Timestamped Readings': self.readings,
+			'Start Date': self.date.isoformat(),
+			'Start Time': self.start_time.isoformat(),
+			'End Time': self.end_time.isoformat(),
+			'Continuous': self.continuous,
+			'Continuous Segments': self.continuous_segments,
+			'Blood Glucose Values': self.just_readings,
+			'Glycemic Variability Index': float("{:0.2f}".format(self.gvi)),
+			'Patient Glycemic Status': float("{:0.1f}".format(self.pgs))
+					}
+
+		return week_dict
+
+	def print_summary(self):
+		"""Print a summary of the data stored for this week."""
+
+		print self.date.isocalendar()[1]
+		print "No. of calibrations = " + str(len(self.calibrations))
+		print "No. of readings = " + str(len(self.readings))
+		print "Continuous: " + str(self.continuous)
+		print "No. of continuous segments = " + str(len(self.continuous_segments))
+		print "Weighted average of Glycemic Variability Index: " + "%0.2f" %self.gvi
+		print "Patient Glycemic Status: " + "%0.1f" %self.pgs
+		print
+
+class DexcomMonth(DexcomDay):
+	"""A month of Dexcom data."""
+
+	def to_JSON(self):
+		"""Bundle monthly data and stats into JSON form."""
+
+		month_dict = {
+			'Month': self.date.month,
+			'Calibrations': self.calibrations,
+			'Timestamped Readings': self.readings,
+			'Start Date': self.date.isoformat(),
+			'Start Time': self.start_time.isoformat(),
+			'End Time': self.end_time.isoformat(),
+			'Continuous': self.continuous,
+			'Continuous Segments': self.continuous_segments,
+			'Blood Glucose Values': self.just_readings,
+			'Glycemic Variability Index': float("{:0.2f}".format(self.gvi)),
+			'Patient Glycemic Status': float("{:0.1f}".format(self.pgs))
+					}
+
+		return month_dict
+
+	def print_summary(self):
+		"""Print a summary of the data stored for this month."""
+
+		print self.date.month
+		print "No. of calibrations = " + str(len(self.calibrations))
+		print "No. of readings = " + str(len(self.readings))
+		print "Continuous: " + str(self.continuous)
+		print "No. of continuous segments = " + str(len(self.continuous_segments))
+		print "Weighted average of Glycemic Variability Index: " + "%0.2f" %self.gvi
+		print "Patient Glycemic Status: " + "%0.1f" %self.pgs
+		print
+
+class DexcomYear(DexcomDay):
+	"""A year of Dexcom data."""
+
+	def to_JSON(self):
+		"""Bundle yearly data and stats into JSON form."""
+
+		year_dict = {
+			'Year': self.date.year,
+			'Calibrations': self.calibrations,
+			'Timestamped Readings': self.readings,
+			'Start Date': self.date.isoformat(),
+			'Start Time': self.start_time.isoformat(),
+			'End Time': self.end_time.isoformat(),
+			'Continuous': self.continuous,
+			'Continuous Segments': self.continuous_segments,
+			'Blood Glucose Values': self.just_readings,
+			'Glycemic Variability Index': float("{:0.2f}".format(self.gvi)),
+			'Patient Glycemic Status': float("{:0.1f}".format(self.pgs))
+					}
+
+		return year_dict
+
+	def print_summary(self):
+		"""Print a summary of the data stored for this year."""
+
+		print self.date.year
+		print "No. of calibrations = " + str(len(self.calibrations))
+		print "No. of readings = " + str(len(self.readings))
+		print "Continuous: " + str(self.continuous)
+		print "No. of continuous segments = " + str(len(self.continuous_segments))
+		print "Weighted average of Glycemic Variability Index: " + "%0.2f" %self.gvi
+		print "Patient Glycemic Status: " + "%0.1f" %self.pgs
+		print
+
 def main():
 
     parser = argparse.ArgumentParser(description='Process the input Dexcom JSON file.')
     parser.add_argument('-d', '--dexcom', action = 'store', dest = "dex_name", help='name of Dexcom .json file')
+    parser.add_argument('-w', '--weeks', action='store_true', dest="weeks", help='Generate dexcom_weeks.json output file')
+    parser.add_argument('-m', '--months', action='store_true', dest="months", help='Generate dexcom_months.json output file')
+    parser.add_argument('-y', '--years', action='store_true', dest="years", help='Generate dexcom_years.json output file')
 
     args = parser.parse_args()
 
-    d = DexcomStats(args.dex_name)
-    d.print_day_JSON()
-    # d.print_daily_summaries()
+    d = DexcomStats(args.dex_name, {'week': args.weeks, 'month': args.months, 'year': args.years})
+    d.print_unit_JSON('days')
+    d.print_daily_summaries()
+    if args.weeks:
+    	d.print_unit_JSON('weeks')
+    	# d.print_unit_summaries('weeks')
+    if args.months:
+    	d.print_unit_JSON('months')
+    	# d.print_unit_summaries('months')
+    if args.years:
+    	d.print_unit_JSON('years')
+    	# d.print_unit_summaries('years')
 
 if __name__ == '__main__':
 	main()
