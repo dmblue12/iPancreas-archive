@@ -343,17 +343,6 @@ class DexcomStats():
 			d = self.days[date]
 			d.calculate_GVI_and_PGS()
 
-	def print_day_JSON(self):
-		"""Call DexcomDay.to_JSON() method for each day and dump to a JSON file."""
-
-		days_json = {'Days': []}
-
-		for date in self.dates:
-			days_json['Days'].append(self.days[date].to_JSON())
-
-		with open("dexcom_days.json", 'w') as f:
-			print >> f, json.dumps(days_json, sort_keys=True, indent=4, separators=(',', ': '))
-
 	def print_unit_JSON(self, unit):
 		"""Call DexcomX.toJSON() method for each unit and dump to a JSON file."""
 
@@ -364,13 +353,6 @@ class DexcomStats():
 
 		with open("dexcom_%s.json" %unit, 'w') as f:
 			print >> f, json.dumps(json_dict, separators=(',', ':'))
-
-	def print_daily_summaries(self):
-		"""Call DexcomDay.print_summary() method for each day with data."""
-
-		for date in self.dates:
-			d = self.days[date]
-			d.print_summary()
 
 	def print_unit_summaries(self, unit):
 		"""Call DexcomX.print_summary() method for each unit with data."""
@@ -465,9 +447,9 @@ class PGS():
 		self.gvi = gvi
 
 		# Percentage of Time in Range
-		self.ptir = self.get_PTIR()
+		self.ptir = self._get_PTIR()
 
-	def get_PTIR(self):
+	def _get_PTIR(self):
 		"""Return percentage of time in range given tuple range."""
 
 		target_min = self.target_range[0]
@@ -681,7 +663,7 @@ class DexcomYear(DexcomDay):
 def main():
 
     parser = argparse.ArgumentParser(description='Process the input Dexcom JSON file.')
-    parser.add_argument('-d', '--dexcom', action = 'store', dest = "dex_name", help='name of Dexcom .json file')
+    parser.add_argument('dex_name', action = 'store', help='Name of Dexcom .json file')
     parser.add_argument('-w', '--weeks', action='store_true', dest="weeks", help='Generate dexcom_weeks.json output file')
     parser.add_argument('-m', '--months', action='store_true', dest="months", help='Generate dexcom_months.json output file')
     parser.add_argument('-y', '--years', action='store_true', dest="years", help='Generate dexcom_years.json output file')
@@ -690,7 +672,7 @@ def main():
 
     d = DexcomStats(args.dex_name, {'week': args.weeks, 'month': args.months, 'year': args.years})
     d.print_unit_JSON('days')
-    d.print_daily_summaries()
+    d.print_unit_summaries('days')
     if args.weeks:
     	d.print_unit_JSON('weeks')
     	# d.print_unit_summaries('weeks')
