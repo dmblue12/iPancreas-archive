@@ -3,5 +3,6 @@ raw/
 web/
 *.pyc
 *.json
+*.mindnode
 d3.v3.min.js
 bootstrap.min.css
