@@ -4,6 +4,7 @@ web/
 *.pyc
 *.json
 *.mindnode
+backbone-min.js
 bootstrap.min.css
 bootstrap-responsive.min.css
 bootstrap.min.js
