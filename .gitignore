@@ -3,6 +3,7 @@ raw/
 web/
 *.pyc
 *.json
+*.map
 *.mindnode
 backbone-min.js
 bootstrap.min.css
