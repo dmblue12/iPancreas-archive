@@ -10,3 +10,5 @@ bootstrap-responsive.min.css
 bootstrap.min.js
 d3.v3.min.js
 glyphicons-halflings.png
+jquery.min.js
+underscore-min.js
