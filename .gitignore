@@ -1,8 +1,14 @@
 .DS_Store
+assets/
+js/
 raw/
 web/
 *.pyc
 *.json
 *.mindnode
-d3.v3.min.js
+backbone-min.js
 bootstrap.min.css
+bootstrap-responsive.min.css
+bootstrap.min.js
+d3.v3.min.js
+glyphicons-halflings.png
