@@ -2,17 +2,16 @@ var app = app || {};
 
 app.AppView = Backbone.View.extend({
 
-	el: '#panky',
+	el: '#main',
 
 	initialize: function() {
-		this.$main = this.$('#main');
 		this.$welcome = this.$('#welcome');
-		this.$menu = this.$('#menu');
+		this.$mod = this.$('#modular');
 
 		this.listenTo(app.Menu, 'change:graph', this.render);
 	},
 
 	render: function() {
-		this.$menu.html("<h2>Menu will go here!</h2>");
+		this.$mod.html("<h2>Menu will go here!</h2>");
 	}
 });

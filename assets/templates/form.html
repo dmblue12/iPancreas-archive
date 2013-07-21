@@ -1,0 +1,34 @@
+<form id="load-data" class="form-horizontal">
+	<fieldset>
+		<legend>Dexcom Continuous Glucose Monitor</legend>
+		<div class="control-group">
+			<span class="help-inline control-label">Data format:</span>
+			<div class="controls">
+				<label for="csv" class="radio inline">
+					<input id="csv" type="radio" name="format" value="csv" checked />
+					 CSV
+				</label>
+				<label for="xml" class="radio inline">
+					<input id="xml" type="radio" name="format" value="xml" />
+					 XML
+				</label>
+			</div>
+		</div>
+		<div class="control-group">
+			<span class="help-inline control-label">Upload:</span>
+			<div class="controls fileupload fileupload-new dexcom-upload" data-provides="fileupload">
+				<div class="input-append">
+					<!-- NB: everything in <div class="uneditable-input"> has to be on ONE line b/c uneditable-input is sensitive to whitespace, Jasny may update bootstrap-fileupload.js to fix (cf. https://github.com/jasny/bootstrap/issues/23) -->
+					<div class="uneditable-input"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div>
+					<span class="btn btn-file">
+						<span class="fileupload-new">Choose Dexcom file</span>
+						<span class="fileupload-exists">Change</span>
+						<input type="file" />
+					</span>
+					<a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+				</div>
+				<button id="dexcom-add" class="btn btn-primary">Upload another Dexcom file</button>
+			</div>
+		</div>
+	</fieldset>
+</form>
