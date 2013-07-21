@@ -4,16 +4,39 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1.0" />
 		<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css" />
+		<style type="text/css">
+			body {
+				padding-top: 60px;
+			}
+		</style>
 		<link rel="stylesheet" type="text/css" href="assets/css/bootstrap-responsive.min.css" />
 		<link rel="stylesheet" type="text/css" href="assets/css/base.css" />
 		<title>iPancreas</title>
 	</head>
 	<body>
 		<div class="container-fluid">
+			<header>
+				<div class="navbar navbar-inverse navbar-fixed-top">
+					<div class="navbar-inner">
+						<ul class="nav">
+							<li id="home-button" class="active">
+								<a href="#"><i class="icon-home icon-white"></i>&nbsp;&nbsp;</a>
+							</li>
+							<li id="back-button" class="disabled">
+								<a href="#"><i class="icon-chevron-left icon-white"></i></a>
+							</li>
+							<li id="forward-button" class="disabled">
+								<a href="#"><i class="icon-chevron-right icon-white"></i></a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</header>
 			<section id="panky" class="row-fluid">
 				<div id="main" class="hero-unit span12">
 					<h1 id="welcome">Welcome to iPancreas</h1>
-					<div id="menu"></div>
+					<div id="menu">
+					</div>
 				</div>
 			</section>
 		</div>
