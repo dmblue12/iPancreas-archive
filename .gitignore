@@ -13,5 +13,8 @@ bootstrap.min.js
 d3.v3.min.js
 glyphicons-halflings*
 jasny-bootstrap.min.css
+jasny-bootstrap-responsive.min.css
 jquery.min.js
+require.min.js
+text.js
 underscore-min.js
