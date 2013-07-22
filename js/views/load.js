@@ -1,14 +1,15 @@
-var app = app || {};
+define(['jquery', 'underscore', 'backbone', 'lib/bootstrap-fileupload', 'text!templates/form.html'],
+	function($, _, Backbone, fileupload, formTemplate) {
+		var LoadView = Backbone.View.extend({
 
-app.LoadView = Backbone.View.extend({
+			el: '#main',
 
-	el: '#load-data',
-
-	initialize: function() {
-
-		require(["text!../../assets/templates/form.html"], function(html) {
-			$('#main').html(html);
+			render: function() {
+				console.log('Rendered LoadView.');
+				var html = _.template(formTemplate);
+				this.$el.append(html);
+			}
 		});
-	}
 
+		return LoadView;
 });

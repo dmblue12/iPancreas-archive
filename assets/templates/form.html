@@ -16,7 +16,7 @@
 		</div>
 		<div class="control-group">
 			<span class="help-inline control-label">Upload:</span>
-			<div class="controls fileupload fileupload-new dexcom-upload" data-provides="fileupload">
+			<div class="controls controls-row fileupload fileupload-new dexcom-upload" data-provides="fileupload">
 				<div class="input-append">
 					<!-- NB: everything in <div class="uneditable-input"> has to be on ONE line b/c uneditable-input is sensitive to whitespace, Jasny may update bootstrap-fileupload.js to fix (cf. https://github.com/jasny/bootstrap/issues/23) -->
 					<div class="uneditable-input"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div>
@@ -27,8 +27,14 @@
 					</span>
 					<a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
 				</div>
-				<button id="dexcom-add" class="btn btn-primary">Upload another Dexcom file</button>
+				<span class="help-inline">
+					<a id="dexcom-add" href="#">Upload another Dexcom file</a>
+				</span>
 			</div>
+		</div>
+		<div class="form-actions">
+			<button type="submit" class="btn btn-primary">Submit</button>
+			<button type="button" class="btn">Cancel</button>
 		</div>
 	</fieldset>
 </form>
