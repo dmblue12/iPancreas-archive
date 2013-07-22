@@ -17,7 +17,8 @@ require.config({
 		backbone: 'lib/backbone-min',
 		d3: 'lib/d3.v3.min',
 		text: 'lib/text',
-		templates: '../assets/templates/'
+		templates: '../assets/templates/',
+		json: '../assets/json/'
 	}
 });
 

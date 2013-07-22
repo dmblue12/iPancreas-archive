@@ -1,5 +1,5 @@
-define(['jquery', 'underscore', 'backbone', 'views/menu', 'views/load'],
-	function($, _, Backbone, MenuView, LoadView) {
+define(['jquery', 'underscore', 'backbone', 'models/app'],
+	function($, _, Backbone, AppModel) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				'': 'index',
@@ -13,28 +13,41 @@ define(['jquery', 'underscore', 'backbone', 'views/menu', 'views/load'],
 		var initialize = function() {
 			var app_router = new AppRouter;
 
+			var appModel = new AppModel();
+
+			var MenuModel = Backbone.Model.extend({});
+			
+			var menuModel = new MenuModel();
+
+			menuModel.fetch({
+				url: 'assets/json/init.json',
+				success: function() {
+					console.log('Successfully loaded init.json.');
+				},
+				error: function() {
+					console.log('Error loading init.json.');
+				}
+			});
+
+			var appView;
+
+			var menuView;
+
 			app_router.on('route:index', function() {
 				require(['views/app'], function(AppView) {
-					var appView = new AppView();
+					if (!appModel.get('started')) {
+						appView = new AppView({model: appModel}, app_router);
+					}
 					appView.render();
-					// TODO: this should happen in AppView, but I need to figure out how to pass the router there
-					app_router.navigate('#/menu', { trigger: true });
 				});
 			});
 
 			app_router.on('route:showMenu', function() {
-				var Menu = Backbone.Model.extend({});
-				var menu = new Menu();
-				menu.fetch({
-					url: 'assets/json/menu.json',
-					success: function() {
-						console.log('Successfully loaded menu.json.');
-						var menuView = new MenuView({model: menu});
-						menuView.render();
-					},
-					error: function() {
-						console.log('There was an error loading menu.json.');
+				require(['views/menu'], function (MenuView) {
+					if (!menuModel.get('started')) {
+						menuView = new MenuView({model: menuModel});
 					}
+					menuView.render();
 				});
 			});
 
