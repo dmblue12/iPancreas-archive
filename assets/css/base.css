@@ -15,3 +15,7 @@ svg {
 	font-family: 'Ultra';
 	src: url('../fonts/ultra.svg#ultra') format('svg');
 }
+
+.menu-text {
+	text-shadow: 0 0 5px #FFFFFF;
+}

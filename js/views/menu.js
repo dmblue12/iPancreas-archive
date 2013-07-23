@@ -1,80 +1,83 @@
-define(['jquery', 'underscore', 'backbone', 'd3', 'text!json/palette.json'],
-	function($, _, Backbone, d3, palette) {
+define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node', 'text!json/palette.json'],
+	function($, _, Backbone, d3, MenuNode, palette) {
 		var MenuView = Backbone.View.extend({
 
-			colors: function(i) {
+			el: '#mainSVG',
+
+			forceInit: function(circleSize, fontSize, textColor, textAnchor) {
 				var p = JSON.parse(palette);
 
-				this.palette = [
+				var colors = [
 					p["dark_blue"],
 					p["red"],
 					p["orange"],
 					p["green"],
 					p["light_blue"]
 				];
-				
-				var index = i + 1;
 
-				if (index <= 5) {
-					return this.palette[index - 1];
-				}
-				else {
-					index = index % 5;
-					return this.palette[index - 1];
-				}
-			},
+				dataset = this.model.get('graph');
 
-			el: '#mainSVG',
-
-			events: {
-				'click .menuCircle': 'loadGraph'
-			},
-
-			forceInit: function() {
-				var colors = this.colors;
-
-				this.dataset = this.model.get('graph');
-
-				this.force = d3.layout.force()
-					.nodes(this.dataset.nodes)
-					.links(this.dataset.edges)
+				force = d3.layout.force()
+					.nodes(dataset.nodes)
+					.links(dataset.edges)
 					.size([800, 400])
-					.linkDistance([200])
-					.charge([-200])
+					.linkDistance([175])
+					.charge([-600])
 					.start();
 
 				var edges = this.$svg.selectAll('line')
-					.data(this.dataset.edges)
+					.data(dataset.edges)
 					.enter()
 					.append('line')
 					.style('stroke', '#CCC')
 					.style('stroke-width', '1');
 
 				var nodes = this.$svg.selectAll('.node')
-					.data(this.dataset.nodes)
+					.data(dataset.nodes)
 					.enter()
 					.append('g')
 					.attr('class', 'menuCircle')
-					.call(this.force.drag);
+					.attr('id', function(d) {
+						return d.title;
+					})
+					.call(force.drag);
+
+				nodes.each(function() {
+					var menuNode = new MenuNode({el: this});
+				});
 
 				nodes.append('circle')
-					.attr('r', 75)
-					.style('fill', function(d, i) {
-						return colors(i);
+					.attr('r', circleSize)
+					.style('fill', function(d) {
+						if (d.id < 5) {
+							return colors[d.id];	
+						}
+						else if (d.title === "Exit") {
+							return '#FFF';
+						}
+						else {
+
+							for(j = 0; j < dataset.edges.length; j++) {
+								if (dataset.edges[j].target.id === d.id) {
+									return colors[dataset.edges[j].source.id];
+								}
+							}
+						}
 					});
 
 				nodes.append('text')
 					.text(function(d) {
 						return d.title;
 					})
-					.attr('fill', 'white')
-					.attr('font-size', '24px')
+					.attr('class', 'menu-text')
+					.attr('fill', textColor)
+					.attr('font-size', fontSize + 'px')
 					.attr('font-family', 'Ultra')
-					.attr('text-anchor', 'middle')
-					.attr('letter-spacing', '.1em')
+					.attr('text-anchor', textAnchor)
+					.attr('letter-spacing', '.15em')
 					.attr('dominant-baseline', 'middle');
 
-				this.force.on('tick', function() {
+				force.on('tick', function() {
 					edges.attr('x1', function(d) { return d.source.x; })
 						.attr('y1', function(d) { return d.source.y; })
 						.attr('x2', function(d) { return d.target.x; })
@@ -87,24 +90,21 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!json/palette.json'],
 			},
 
 			forceUpdate: function() {
-
+				console.log('Fired force update.');
+				this.$('g').remove();
+				this.$('line').remove();
+				this.forceInit(15, 16, 'black', 'right');
 			},
 
 			initialize: function() {
 
 				this.$svg = d3.select(this.el);
 
-				this.forceInit();
-
-				this.model.set('started', true);
-			},
-
-			loadGraph: function() {
-
+				this.listenTo(this.model, 'change:graph', this.forceUpdate);
 			},
 
 			render: function() {
-				console.log('Rendered MenuView.');
+				this.forceInit(75, 32, 'white', 'middle');
 			}
 		});
 

@@ -3,33 +3,25 @@ define(['jquery', 'underscore', 'backbone', 'models/app'],
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				'': 'index',
-				'menu': 'showMenu',
+				'menu/:param': 'showMenu',
 				'load': 'showLoad',
+				'back': 'back',
+				'forward': 'forward',
 
 				'*actions': 'defaultAction'
 			}
 		});
 
 		var initialize = function() {
-			var app_router = new AppRouter;
+			app_router = new AppRouter;
 
 			var appModel = new AppModel();
 
 			var MenuModel = Backbone.Model.extend({});
-			
-			var menuModel = new MenuModel();
-
-			menuModel.fetch({
-				url: 'assets/json/init.json',
-				success: function() {
-					console.log('Successfully loaded init.json.');
-				},
-				error: function() {
-					console.log('Error loading init.json.');
-				}
-			});
 
 			var appView;
+
+			var menuModel = new MenuModel();
 
 			var menuView;
 
@@ -42,18 +34,46 @@ define(['jquery', 'underscore', 'backbone', 'models/app'],
 				});
 			});
 
-			app_router.on('route:showMenu', function() {
+			app_router.on('route:showMenu', function(file) {
 				require(['views/menu'], function (MenuView) {
-					if (!menuModel.get('started')) {
-						menuView = new MenuView({model: menuModel});
-					}
-					menuView.render();
+					menuModel.fetch({
+						url: 'assets/json/' + file + '.json',
+						success: function() {
+							console.log('Successfully loaded ' + file + '.json.');
+							if (file === 'init') {
+								if (menuView) {
+									this.$('g').remove();
+									this.$('line').remove();
+									menuView.render();
+								}
+								else {
+									console.log('Fired this option.')
+									menuView = new MenuView({model: menuModel});
+									menuView.render();	
+								}
+							}
+						},
+						error: function() {
+							console.log('Error loading menu JSON.');
+						}
+					});
 				});
 			});
 
 			app_router.on('route:showLoad', function() {
 				var loadView = new LoadView();
 				loadView.render();
+			});
+
+			app_router.on('route:back', function() {
+				console.log('Fired back route.');
+				window.history.back();
+				$('#forward-button').removeClass('disabled');
+			});
+
+			app_router.on('route:forward', function() {
+				console.log('Fired forward route.');
+				window.history.back();
 			});
 
 			app_router.on('defaultAction', function(action) {

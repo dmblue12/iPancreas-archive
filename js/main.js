@@ -17,11 +17,13 @@ require.config({
 		backbone: 'lib/backbone-min',
 		d3: 'lib/d3.v3.min',
 		text: 'lib/text',
-		templates: '../assets/templates/',
-		json: '../assets/json/'
+		templates: '../assets/templates',
+		json: '../assets/json'
 	}
 });
 
 require(['app'], function(App) {
 	App.initialize();
 });
+
+var app_router;
