@@ -72,7 +72,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node', 'text!json/
 					.attr('class', 'menu-text')
 					.attr('fill', textColor)
 					.attr('font-size', fontSize + 'px')
-					.attr('font-family', 'Ultra')
+					.attr('font-family', 'ChunkFive')
 					.attr('text-anchor', textAnchor)
 					.attr('letter-spacing', '.15em')
 					.attr('dominant-baseline', 'middle');
@@ -104,7 +104,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node', 'text!json/
 			},
 
 			render: function() {
-				this.forceInit(75, 32, 'white', 'middle');
+				this.forceInit(75, 36, 'white', 'middle');
 			}
 		});
 

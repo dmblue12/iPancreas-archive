@@ -12,8 +12,8 @@ svg {
 }
 
 @font-face {
-	font-family: 'Ultra';
-	src: url('../fonts/ultra.svg#ultra') format('svg');
+	font-family: 'ChunkFive';
+	src: url('../fonts/chunkfive.svg#ChunkFive-Roman') format('svg');
 }
 
 .menu-text {
