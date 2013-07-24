@@ -36,11 +36,12 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node', 'text!json/
 					.data(dataset.nodes)
 					.enter()
 					.append('g')
+					.attr('class', 'menuCircle')
 					.attr('class', function(d) {
-						return 'menuCircle ' + d.group;
+						return d.group;
 					})
 					.attr('id', function(d) {
-						return d.title;
+						return d.title.toLowerCase().replace(' ', '_');
 					})
 					.call(force.drag);
 
@@ -54,11 +55,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node', 'text!json/
 						if (d.id < 5) {
 							return colors[d.id];	
 						}
-						else if (d.title === "Exit") {
-							return '#FFF';
-						}
 						else {
-
 							for(j = 0; j < dataset.edges.length; j++) {
 								if (dataset.edges[j].target.id === d.id) {
 									return colors[dataset.edges[j].source.id];

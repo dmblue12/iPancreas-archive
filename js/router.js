@@ -7,6 +7,7 @@ define(['jquery', 'underscore', 'backbone', 'models/app'],
 				'load': 'showLoad',
 				'back': 'back',
 				'forward': 'forward',
+				'exit': 'exit',
 
 				'*actions': 'defaultAction'
 			}
@@ -74,6 +75,16 @@ define(['jquery', 'underscore', 'backbone', 'models/app'],
 			app_router.on('route:forward', function() {
 				console.log('Fired forward route.');
 				window.history.back();
+			});
+
+			app_router.on('route:exit', function() {
+				if (confirm('Are you sure you want to quit?')) {
+					Ti.App.exit();
+				}
+				// else is necessary to make it possible to use the exit button even if you change your mind the first time
+				else {
+					app_router.navigate('#', { trigger: false });
+				}
 			});
 
 			app_router.on('defaultAction', function(action) {

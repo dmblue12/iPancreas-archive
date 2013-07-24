@@ -7,21 +7,25 @@ define(['jquery', 'underscore', 'backbone'],
 			},
 
 			initialize: function() {
-				this.$el.css('cursor', 'pointer');
+				// jQuery hasClass() doesn't work for SVG
+				// TODO: factor fixes for this out into another .js script
+				var classes = this.$el.attr('class');
+				if (classes.search('clickable') != -1) {
+					this.$el.css('cursor', 'pointer');
+				}
 			},
 
 			action: function() {
 				console.log("Clicked on " + this.$el.attr('id'));
 				var action = this.$el.attr('id');
 				switch(action) {
-					case 'exit': {
-						if (confirm('Are you sure you want to quit?')) {
-							Ti.App.exit();
-						}
-					}
 					case 'start': {
 						app_router.navigate('#/menu/menu', { trigger: false });
-					}				
+						break;
+					}
+					default: {
+						console.log("I don't know what you want me to do.");
+					}			
 				}
 			}
 		});
