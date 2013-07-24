@@ -36,7 +36,9 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node', 'text!json/
 					.data(dataset.nodes)
 					.enter()
 					.append('g')
-					.attr('class', 'menuCircle')
+					.attr('class', function(d) {
+						return 'menuCircle ' + d.group;
+					})
 					.attr('id', function(d) {
 						return d.title;
 					})

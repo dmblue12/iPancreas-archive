@@ -29,6 +29,6 @@ svg {
 	src: url('../fonts/chunkfive.svg#ChunkFive-Roman') format('svg');
 }
 
-.menu-text {
+.glow .menu-text {
 	text-shadow: 0 0 5px #FFFFFF;
 }
