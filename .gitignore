@@ -2,10 +2,11 @@
 fonts/
 raw/
 web/
-*.pyc
 *.json
 *.map
 *.mindnode
+*.pxm
+*.pyc
 backbone-min.js
 bootstrap.min.css
 bootstrap-fileupload.js
