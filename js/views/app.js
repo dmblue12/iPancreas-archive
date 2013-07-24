@@ -18,12 +18,12 @@ define([
 				this.$main.append(this.html);
 
 				this.$('#welcome1').css('position', 'absolute').delay(2500).fadeOut(2500);
-				this.$('#welcome2').css('position', 'absolute').css('bottom', '90px').css('right', '80px').delay(2500).fadeOut(2500);
+				this.$('#welcome2').css('position', 'absolute').css('bottom', '70px').css('right', '10px').delay(2500).fadeOut(2500);
 
 				this.$svg = d3.select('#main')
 					.append('svg')
-					.attr('width', 800)
-					.attr('height', 460)
+					.attr('width', 1300)
+					.attr('height', 640)
 					.attr('id', 'mainSVG');
 
 				this.model.start();

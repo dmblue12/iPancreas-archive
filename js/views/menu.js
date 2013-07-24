@@ -20,7 +20,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node', 'text!json/
 				force = d3.layout.force()
 					.nodes(dataset.nodes)
 					.links(dataset.edges)
-					.size([800, 400])
+					.size([1300, 640])
 					.linkDistance([175])
 					.charge([-600])
 					.start();
