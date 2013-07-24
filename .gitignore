@@ -4,10 +4,11 @@ iPancreas/
 js/
 raw/
 web/
-*.pyc
 *.json
 *.map
 *.mindnode
+*.pxm
+*.pyc
 backbone-min.js
 bootstrap.min.css
 bootstrap-responsive.min.css
