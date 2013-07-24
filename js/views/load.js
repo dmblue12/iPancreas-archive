@@ -4,12 +4,13 @@ define(['jquery', 'underscore', 'backbone', 'lib/bootstrap-fileupload', 'text!te
 
 			el: '#main',
 
-			render: function() {
+			initialize: function() {
 				console.log('Rendered LoadView.');
+				this.$('#mainSVG').hide();
 				var html = _.template(formTemplate);
 				this.$el.append(html);
 			}
 		});
-
-		return LoadView;
+	
+	return LoadView;
 });

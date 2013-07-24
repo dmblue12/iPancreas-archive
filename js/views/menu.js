@@ -2,9 +2,12 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node', 'text!json/
 	function($, _, Backbone, d3, MenuNode, palette) {
 		var MenuView = Backbone.View.extend({
 
-			el: '#mainSVG',
+			el: '#main',
 
 			forceInit: function(circleSize, fontSize, textColor, textAnchor) {
+
+				this.$('#mainSVG').show();
+
 				var p = JSON.parse(palette);
 
 				var colors = [
@@ -90,19 +93,20 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node', 'text!json/
 
 			forceUpdate: function() {
 				console.log('Fired force update.');
-				this.$('g').remove();
-				this.$('line').remove();
+				this.$('form').remove();
+				this.$('#mainSVG').empty();
 				this.forceInit(15, 16, 'black', 'right');
 			},
 
 			initialize: function() {
 
-				this.$svg = d3.select(this.el);
+				this.$svg = d3.select('#mainSVG');
 
 				this.listenTo(this.model, 'change:graph', this.forceUpdate);
 			},
 
 			render: function() {
+
 				this.forceInit(75, 36, 'white', 'middle');
 			}
 		});

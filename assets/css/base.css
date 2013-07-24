@@ -15,6 +15,10 @@ h1[id^='welcome'] {
 	padding: 60px 60px;
 }
 
+form {
+	padding: 60px 60px;
+}
+
 #start {
 	text-align: center;
 }

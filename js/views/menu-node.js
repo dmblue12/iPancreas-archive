@@ -20,11 +20,12 @@ define(['jquery', 'underscore', 'backbone'],
 				var action = this.$el.attr('id');
 				switch(action) {
 					case 'start': {
-						app_router.navigate('#/menu/menu', { trigger: false });
+						app_router.navigate('#/menu/menu');
 						break;
 					}
 					default: {
-						console.log("I don't know what you want me to do.");
+						app_router.navigate('#/' + action);
+						appModel.set('action_taken', true);
 					}			
 				}
 			}

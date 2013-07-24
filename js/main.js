@@ -27,3 +27,5 @@ require(['app'], function(App) {
 });
 
 var app_router;
+
+var appModel;

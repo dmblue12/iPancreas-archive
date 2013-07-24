@@ -27,12 +27,37 @@ define([
 					.attr('id', 'mainSVG');
 
 				this.model.start();
+
+				this.listenTo(this.model, 'change:action_taken', this.activate_back);
+
+				this.listenTo(this.model, 'change:navigated', this.save_fragment);
+
+				this.listenTo(this.model, 'change:clear', this.clear);
 			},
 
 			render: function() {
 				console.log('Rendered AppView.');
 
-				app_router.navigate('#/menu/init', { trigger: false });
+				app_router.navigate('#/menu/init');
+			},
+
+			activate_back: function() {
+				this.$('#back-button').removeClass('disabled');
+			},
+
+			save_fragment: function() {
+				if (this.model.get('navigated')) {
+					this.model.set('forward', Backbone.history.getFragment());	
+				}
+				this.model.set('navigated', false);
+			},
+
+			clear: function() {
+				console.log('Fired clear.');
+				if (this.model.get('clear')) {
+					this.$main.empty();	
+				}
+				this.model.set('clear', false);
 			}
 
 		});

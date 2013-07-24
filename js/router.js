@@ -4,7 +4,7 @@ define(['jquery', 'underscore', 'backbone', 'models/app'],
 			routes: {
 				'': 'index',
 				'menu/:param': 'showMenu',
-				'load': 'showLoad',
+				'load_data': 'showLoad',
 				'back': 'back',
 				'forward': 'forward',
 				'exit': 'exit',
@@ -16,7 +16,7 @@ define(['jquery', 'underscore', 'backbone', 'models/app'],
 		var initialize = function() {
 			app_router = new AppRouter;
 
-			var appModel = new AppModel();
+			appModel = new AppModel();
 
 			var MenuModel = Backbone.Model.extend({});
 
@@ -25,6 +25,8 @@ define(['jquery', 'underscore', 'backbone', 'models/app'],
 			var menuModel = new MenuModel();
 
 			var menuView;
+
+			var historyList = appModel.get('forward');
 
 			app_router.on('route:index', function() {
 				require(['views/app'], function(AppView) {
@@ -43,14 +45,13 @@ define(['jquery', 'underscore', 'backbone', 'models/app'],
 							console.log('Successfully loaded ' + file + '.json.');
 							if (file === 'init') {
 								if (menuView) {
-									this.$('g').remove();
-									this.$('line').remove();
+									console.log('Fired existing MenuView option.');
 									menuView.render();
 								}
 								else {
-									console.log('Fired this option.')
+									console.log('Fired new MenuView option.')
 									menuView = new MenuView({model: menuModel});
-									menuView.render();	
+									menuView.render();
 								}
 							}
 						},
@@ -59,22 +60,26 @@ define(['jquery', 'underscore', 'backbone', 'models/app'],
 						}
 					});
 				});
+				forwardHistory();
 			});
 
 			app_router.on('route:showLoad', function() {
-				var loadView = new LoadView();
-				loadView.render();
+				require(['views/load'], function(LoadView) {
+					var loadView = new LoadView();
+					forwardHistory();
+				});
 			});
 
 			app_router.on('route:back', function() {
 				console.log('Fired back route.');
-				window.history.back();
+				window.history.go(-2);
+				// TODO: do this only once
 				$('#forward-button').removeClass('disabled');
 			});
 
 			app_router.on('route:forward', function() {
 				console.log('Fired forward route.');
-				window.history.back();
+				app_router.navigate('#/' + historyList[historyList.length - 2]);
 			});
 
 			app_router.on('route:exit', function() {
@@ -83,7 +88,7 @@ define(['jquery', 'underscore', 'backbone', 'models/app'],
 				}
 				// else is necessary to make it possible to use the exit button even if you change your mind the first time
 				else {
-					app_router.navigate('#', { trigger: false });
+					app_router.navigate('#');
 				}
 			});
 
@@ -91,10 +96,15 @@ define(['jquery', 'underscore', 'backbone', 'models/app'],
 				console.log('No route: ', action);
 			});
 
+			var forwardHistory = function() {
+				// console.log(historyList);
+				historyList.push(Backbone.history.getFragment());
+			};
+
 			Backbone.history.start();
 		};
 
 		return {
 			initialize: initialize
 		};
-	});
+});
