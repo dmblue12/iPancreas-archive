@@ -35,3 +35,5 @@ var appModel;
 var w = Ti.UI.currentWindow;
 
 var dataDir = Ti.Filesystem.getApplicationDataDirectory();
+
+window.test_python();

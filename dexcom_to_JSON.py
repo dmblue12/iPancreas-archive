@@ -93,5 +93,8 @@ def main():
     else:
         d = StudioReader(args.dexcom_file)
 
+def test_python():
+    print "This is a test."
+
 if __name__ == '__main__':
     main()
