@@ -13,6 +13,7 @@ body {
 
 h1[id^='welcome'] {
 	padding: 60px 60px;
+	margin-top: 0;
 }
 
 form {
