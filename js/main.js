@@ -18,7 +18,8 @@ require.config({
 		d3: 'lib/d3.v3.min',
 		text: 'lib/text',
 		templates: '../assets/templates',
-		json: '../assets/json'
+		json: '../assets/json',
+		python: '../python'
 	}
 });
 
@@ -29,3 +30,8 @@ require(['app'], function(App) {
 var app_router;
 
 var appModel;
+
+// TideSDK variables
+var w = Ti.UI.currentWindow;
+
+var dataDir = Ti.Filesystem.getApplicationDataDirectory();
