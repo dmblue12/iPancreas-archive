@@ -12,23 +12,34 @@ class StudioReader():
 
         self.output_filename = output
 
-        # store UTC offset if given on command line with Dexcom file
-        try:
-            self.offset = dex[1]
-        except IndexError as i1:
-            self.offset = None
+        if type(dex[0]) == 'tuple':
+            for dexfile in dex:
+                offset = dexfile[1]
+                filename = dexfile[0]
+                with open(filename, 'rb') as f:
+                    self.rdr = csv.reader(f, delimiter = '\t', quoting=csv.QUOTE_NONE)
+                    self._get_readings(offset)
+                with open(filename, 'rb') as f:
+                    self.rdr = csv.reader(f, delimiter = '\t', quoting=csv.QUOTE_NONE)
+                    self._get_calibs(offset)
+        else:
+            # store UTC offset if given on command line with Dexcom file
+            try:
+                offset = dex[1]
+            except IndexError as i1:
+                offset = None
 
-        with open(dex[0], 'rb') as f:
-            self.rdr = csv.reader(f, delimiter='\t', quoting=csv.QUOTE_NONE)
-            self._get_readings()
+            with open(dex[0], 'rb') as f:
+                self.rdr = csv.reader(f, delimiter='\t', quoting=csv.QUOTE_NONE)
+                self._get_readings(offset)
 
-        with open(dex[0], 'rb') as f:
-            self.rdr = csv.reader(f, delimiter='\t', quoting=csv.QUOTE_NONE)
-            self._get_calibs()
+            with open(dex[0], 'rb') as f:
+                self.rdr = csv.reader(f, delimiter='\t', quoting=csv.QUOTE_NONE)
+                self._get_calibs(offset)
 
         self.create_JSON()
 
-    def _get_readings(self):
+    def _get_readings(self, offset):
         """Read blood glucose values and timestamps from Dexcom export file and save in a dict."""
 
         readings = self.dexcom['Readings']
@@ -45,10 +56,10 @@ class StudioReader():
                 numeric = "401"
             int_numeric = int(numeric)
             readings.append({"timestamp": util_time.dexcom_to_ISO8601(row[3]),
-                "UTC_timestamp": util_time.dexcom_to_ISO8601(row[2], self.offset),
+                "UTC_timestamp": util_time.dexcom_to_ISO8601(row[2], offset),
                 "blood_glucose": int_numeric})
 
-    def _get_calibs(self):
+    def _get_calibs(self, offset):
         """Read blood glucose calibrations and timestamps from Dexcom export file and save in a dict."""
 
         calibs = self.dexcom['Calibrations']
@@ -66,7 +77,7 @@ class StudioReader():
             if numeric != "":
                 int_numeric = int(numeric)
                 calibs.append({"timestamp": util_time.dexcom_to_ISO8601(row[6]),
-                    "UTC_timestamp": util_time.dexcom_to_ISO8601(row[5], self.offset),
+                    "UTC_timestamp": util_time.dexcom_to_ISO8601(row[5], offset),
                     "blood_glucose": int_numeric})
 
     def create_JSON(self):
