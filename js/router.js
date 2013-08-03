@@ -1,10 +1,11 @@
-define(['jquery', 'underscore', 'backbone', 'models/app'],
-	function($, _, Backbone, AppModel) {
+define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files'],
+	function($, _, Backbone, AppModel, DexcomFiles) {
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				'': 'index',
 				'menu/:param': 'showMenu',
 				'load_data': 'showLoad',
+				'loading': 'showLoading',
 				'back': 'back',
 				'forward': 'forward',
 				'exit': 'exit',
@@ -32,6 +33,9 @@ define(['jquery', 'underscore', 'backbone', 'models/app'],
 				require(['views/app'], function(AppView) {
 					if (!appModel.get('started')) {
 						appView = new AppView({model: appModel}, app_router);
+					}
+					else {
+						$('.to-clear').remove();
 					}
 					appView.render();
 				});
@@ -65,13 +69,14 @@ define(['jquery', 'underscore', 'backbone', 'models/app'],
 
 			app_router.on('route:showLoad', function() {
 				require(['views/load'], function(LoadView) {
-					var loadView = new LoadView();
+					loadView = new LoadView();
 					forwardHistory();
 				});
 			});
 
 			app_router.on('route:back', function() {
 				console.log('Fired back route.');
+				$('.to-clear').remove();
 				window.history.go(-2);
 				// TODO: do this only once
 				$('#forward-button').removeClass('disabled');
@@ -79,6 +84,7 @@ define(['jquery', 'underscore', 'backbone', 'models/app'],
 
 			app_router.on('route:forward', function() {
 				console.log('Fired forward route.');
+				$('.to-clear').remove();
 				app_router.navigate('#/' + historyList[historyList.length - 2]);
 			});
 

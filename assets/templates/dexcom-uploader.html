@@ -1,0 +1,21 @@
+<span class="help-inline control-label">File #<% print(id + 1) %>:</span>
+<div class="controls controls-row">
+	<div class="input-append">
+		<!-- NB: everything in <div class="uneditable-input"> has to be on ONE line b/c uneditable-input is sensitive to whitespace, Jasny may update bootstrap-fileupload.js to fix (cf. https://github.com/jasny/bootstrap/issues/23) -->
+		<div class="uneditable-input input-xxlarge"><i class="icon-file file-exists"></i> <span class="file-preview" id="dexcom_file<%= id %>"></span></div>
+		<span id="choose_dexcom<%= id %>" class="btn btn-file">Choose a Dexcom file</span>
+	</div>
+</div>
+<div class="controls controls-row">
+	<div class="input-prepend">
+		<div class="btn-group" id="offsets<%= id %>">
+			<span class="btn offset active" sign="+"><i class="icon-plus"></i></span>
+			<span class="btn offset" sign="-"><i class="icon-minus"></i></span>
+		</div>
+		<input id="dexcom-offset" type="text" class="input-mini" name="dexcom_offset<%= id %>" />
+	</div>
+	<span class="help-inline">Timezone offset from UTC</span>
+	<span class="help-inline" id="upload-additional<%= id %>">
+		<a class="btn btn-link disabled">Click here to upload an additional Dexcom file</a>
+	</span>
+</div>
