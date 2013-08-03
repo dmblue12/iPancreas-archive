@@ -6,15 +6,18 @@ import util_time
 class StudioReader():
     """Reads Dexcom Studio .csv export file and encodes to JSON."""
 
-    def __init__(self, dex, output = ""):
+    def __init__(self, dex, path, output = ""):
 
         self.dexcom = {'Calibrations': [], 'Readings': []}
 
         self.output_filename = output
 
-        if type(dex[0]) == 'tuple':
+        try:
             for dexfile in dex:
-                offset = dexfile[1]
+                if dexfile[1] == "":
+                    offset = None
+                else:
+                    offset = dexfile[1]
                 filename = dexfile[0]
                 with open(filename, 'rb') as f:
                     self.rdr = csv.reader(f, delimiter = '\t', quoting=csv.QUOTE_NONE)
@@ -22,7 +25,8 @@ class StudioReader():
                 with open(filename, 'rb') as f:
                     self.rdr = csv.reader(f, delimiter = '\t', quoting=csv.QUOTE_NONE)
                     self._get_calibs(offset)
-        else:
+
+        except IOError:
             # store UTC offset if given on command line with Dexcom file
             try:
                 offset = dex[1]
@@ -37,7 +41,7 @@ class StudioReader():
                 self.rdr = csv.reader(f, delimiter='\t', quoting=csv.QUOTE_NONE)
                 self._get_calibs(offset)
 
-        self.create_JSON()
+        self.create_JSON(path)
 
     def _get_readings(self, offset):
         """Read blood glucose values and timestamps from Dexcom export file and save in a dict."""
@@ -80,13 +84,13 @@ class StudioReader():
                     "UTC_timestamp": util_time.dexcom_to_ISO8601(row[5], offset),
                     "blood_glucose": int_numeric})
 
-    def create_JSON(self):
+    def create_JSON(self, path):
         """Transfer BG objects to a JSON file."""
 
         if self.output_filename:
             filename = self.output_filename
         else:
-            filename = "dexcom.json"
+            filename = path + "/dexcom.json"
 
         with open(filename, 'w') as f:
             print >> f, json.dumps(self.dexcom, sort_keys=True, indent=4, separators=(',', ': '))
@@ -100,9 +104,9 @@ def main():
     args = parser.parse_args()
 
     if args.output:
-        d = StudioReader(args.dexcom_file, args.output)
+        d = StudioReader(args.dexcom_file, "", args.output)
     else:
-        d = StudioReader(args.dexcom_file)
+        d = StudioReader(args.dexcom_file, "")
 
 if __name__ == '__main__':
     main()
