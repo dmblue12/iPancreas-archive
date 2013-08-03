@@ -17,8 +17,8 @@ define([
 
 				this.$main.append(this.html);
 
-				this.$('#welcome1').css('position', 'absolute').delay(2500).fadeOut(2500);
-				this.$('#welcome2').css('position', 'absolute').css('bottom', '10px').css('right', '10px').delay(2500).fadeOut(2500);
+				this.$('#welcome1').delay(2500).fadeOut(2500);
+				this.$('#welcome2').css('bottom', '10px').css('right', '10px').delay(2500).fadeOut(2500);
 
 				this.$svg = d3.select('#main')
 					.append('svg')

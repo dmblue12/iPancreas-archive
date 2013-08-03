@@ -43,8 +43,8 @@ svg {
 	text-align: center;
 }
 
-#gif {
-	padding-top: 200px;
+#img {
+	padding-top: 150px;
 	position: absolute;
 }
 
@@ -53,4 +53,9 @@ img {
 	border-width: 10px;
 	border-color: transparent;
    	-webkit-box-shadow: 0 0 10px #000000;
+}
+
+/* prevent scrollbars from appearing on loading window */
+#loading {
+	overflow: hidden;
 }

@@ -4,11 +4,10 @@ define([
 	'backbone',
 	'lib/bootstrap.min',
 	'text!templates/form.html',
-	'text!templates/loading.html',
 	'models/dex-file',
 	'collections/dex-files',
 	'views/dexcom-uploader'],
-	function($, _, Backbone, Bootstrap, formTemplate, loadingTemplate, FileModel, DexcomFiles, DexcomLoadView) {
+	function($, _, Backbone, Bootstrap, formTemplate, FileModel, DexcomFiles, DexcomLoadView) {
 		var LoadView = Backbone.View.extend({
 
 			el: '#main',
@@ -22,7 +21,6 @@ define([
 				$("[id^='welcome']").remove();
 				console.log('Rendered LoadView.');
 				this.$('#mainSVG').hide();
-				this.loadingTmpl = _.template(loadingTemplate);
 				this.$el.append(_.template(formTemplate));
 				this.collection = new DexcomFiles();
 
@@ -76,7 +74,6 @@ define([
 				});
 				this.$('#mainSVG').empty();
 				this.$('#mainSVG').show();
-				this.$el.prepend(this.loadingTmpl);
 			},
 
 			submitFiles: function() {
