@@ -90,7 +90,10 @@ class StudioReader():
         if self.output_filename:
             filename = self.output_filename
         else:
-            filename = path + "/dexcom.json"
+            if path == "":
+                filename = "dexcom.json"
+            else:
+                filename = path + "/dexcom.json"
 
         with open(filename, 'w') as f:
             print >> f, json.dumps(self.dexcom, sort_keys=True, indent=4, separators=(',', ': '))
