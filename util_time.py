@@ -51,7 +51,11 @@ def dexcom_to_ISO8601(t, offset = ""):
 
 	if offset != "":
 		dextime = DexcomInternalTime(offset)
-		pt = datetime.strptime(t, '%Y-%m-%d %H:%M:%S')
+		try:
+			pt = datetime.strptime(t, '%Y-%m-%d %H:%M:%S')
+		except ValueError:
+			pt = datetime.strptime(t, '%Y-%m-%d %H:%M:%S.%f')
+			pt = pt.replace(microsecond=0)
 		pt = pt.replace(tzinfo=dextime)
 		# if no offset was given for translating Dexcom-internal timestamp to UTC, return "" for the UTC_timestamp
 		try:
@@ -60,7 +64,11 @@ def dexcom_to_ISO8601(t, offset = ""):
 			return ""
 
 	else:
-		pt = datetime.strptime(t, '%Y-%m-%d %H:%M:%S')
+		try:
+			pt = datetime.strptime(t, '%Y-%m-%d %H:%M:%S')
+		except ValueError:
+			pt = datetime.strptime(t, '%Y-%m-%d %H:%M:%S.%f')
+			pt = pt.replace(microsecond=0)
 
 	return pt.isoformat()
 
