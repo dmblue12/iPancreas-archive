@@ -13,6 +13,8 @@ class DexcomStats():
 		with open(dex, 'rb') as f:
 			self.dexcom = json.load(f)
 
+		self.path = dex.rstrip('dexcom.json')
+
 		self.calibrations = self.dexcom['Calibrations']
 
 		self.readings = self.dexcom['Readings']
@@ -55,17 +57,17 @@ class DexcomStats():
 
 		self.dates.sort()
 
-		if options['week']:
+		if options[0]:
 			# method to split data into DexcomWeek objects
 			self._split_by_week()
 			self.units['weeks'] = self.weeks
 
-		if options['month']:
+		if options[1]:
 			# method to split data into DexcomMonth objects
 			self._split_by_month()
 			self.units['months'] = self.months
 
-		if options['year']:
+		if options[2]:
 			# method to split data into DexcomYear objects
 			self._split_by_year()
 			self.units['years'] = self.years
@@ -351,7 +353,7 @@ class DexcomStats():
 		for u in sorted(self.units[unit].iteritems()):
 			json_dict[unit.capitalize()].append(u[1].to_JSON())
 
-		with open("dexcom_%s.json" %unit, 'w') as f:
+		with open(self.path + "/dexcom_%s.json" %unit, 'w') as f:
 			print >> f, json.dumps(json_dict, separators=(',', ':'))
 
 	def print_unit_summaries(self, unit):
@@ -670,7 +672,7 @@ def main():
 
     args = parser.parse_args()
 
-    d = DexcomStats(args.dex_name, {'week': args.weeks, 'month': args.months, 'year': args.years})
+    d = DexcomStats(args.dex_name, [args.weeks, args.months, arg.years])
     d.print_unit_JSON('days')
     d.print_unit_summaries('days')
     if args.weeks:
