@@ -20,18 +20,25 @@ define(['underscore', 'backbone', 'models/dex-file', 'views/loaded'],
 					maximizable: true,
 					minimizable: true,
 		            center: true,
-		            closeable: false,
+		            closeable: true,
 		            resizable: false,
 		            fullscreen: false,
 		            maximized: false,
 		            minimized: false,
-		            usingChrome: false,
+		            usingChrome: true,
 		            visible: true
 				});
 				loadWindow.open();
 				loadWindow.setTopMost(true);
 				setTimeout(function() {
-					window.StudioReader(fileList, dataDir.nativePath());			
+					window.StudioReader(fileList, dataDir.nativePath());
+					dexcomPath = dataDir.nativePath() + '/dexcom.json';
+					console.log(dexcomPath);
+					var d = window.DexcomStats(dexcomPath, [true, true, true]);
+					d.print_unit_JSON('days');
+					d.print_unit_JSON('weeks');
+					d.print_unit_JSON('months');
+					d.print_unit_JSON('years');
 					setTimeout(function() {
 						loadWindow.close();
 						$('.to-clear').remove();
