@@ -353,8 +353,12 @@ class DexcomStats():
 		for u in sorted(self.units[unit].iteritems()):
 			json_dict[unit.capitalize()].append(u[1].to_JSON())
 
-		with open(self.path + "/dexcom_%s.json" %unit, 'w') as f:
-			print >> f, json.dumps(json_dict, separators=(',', ':'))
+		if self.path != "":
+			with open(self.path + "/dexcom_%s.json" %unit, 'w') as f:
+				print >> f, json.dumps(json_dict, separators=(',', ':'))
+		else:
+			with open("dexcom_%s.json" %unit, 'w') as f:
+				print >> f, json.dumps(json_dict, separators=(',', ':'))	
 
 	def print_unit_summaries(self, unit):
 		"""Call DexcomX.print_summary() method for each unit with data."""
@@ -672,7 +676,7 @@ def main():
 
     args = parser.parse_args()
 
-    d = DexcomStats(args.dex_name, [args.weeks, args.months, arg.years])
+    d = DexcomStats(args.dex_name, [args.weeks, args.months, args.years])
     d.print_unit_JSON('days')
     d.print_unit_summaries('days')
     if args.weeks:
