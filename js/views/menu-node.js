@@ -23,6 +23,18 @@ define(['jquery', 'underscore', 'backbone'],
 						app_router.navigate('#/menu/menu');
 						break;
 					}
+					case 'weekly': {
+						app_router.navigate('#/summary/weeks');
+						break;
+					}
+					case 'monthly': {
+						app_router.navigate('#/summary/months');
+						break;
+					}
+					case 'yearly': {
+						app_router.navigate('#/summary/years');
+						break;
+					}
 					default: {
 						app_router.navigate('#/' + action);
 						appModel.set('action_taken', true);

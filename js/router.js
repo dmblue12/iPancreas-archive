@@ -5,7 +5,7 @@ define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files
 				'': 'index',
 				'menu/:param': 'showMenu',
 				'load_data': 'showLoad',
-				'loading': 'showLoading',
+				'summary/:param': 'showSummary',
 				'back': 'back',
 				'forward': 'forward',
 				'exit': 'exit',
@@ -21,9 +21,9 @@ define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files
 
 			var MenuModel = Backbone.Model.extend({});
 
-			var appView;
-
 			var menuModel = new MenuModel();
+
+			var appView;
 
 			var menuView;
 
@@ -69,7 +69,15 @@ define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files
 
 			app_router.on('route:showLoad', function() {
 				require(['views/load'], function(LoadView) {
-					loadView = new LoadView();
+					var loadView = new LoadView();
+					forwardHistory();
+				});
+			});
+
+			app_router.on('route:showSummary', function(units) {
+				require(['views/summary'], function(SummaryView) {
+					var summaryView = new SummaryView({id: units});
+					summaryView.render();
 					forwardHistory();
 				});
 			});
