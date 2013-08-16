@@ -19,9 +19,9 @@
 				font-size: 12px;
 			}
 /* crispEdges incompatible with rounded corners */
-/*			rect {
+			rect {
 				shape-rendering: crispEdges;
-			}*/
+			}
 		</style>
 	</head>
 	<body>
@@ -60,8 +60,11 @@
 			var dataset;
 			var dataByHour = [];
 			var xScale;
+			var yScaleForBins;
 			var yScale;
+			var zScale;
 			var yAxis;
+			var xAxis;
 			var currentWeek;
 
 			d3.json("../dexcom_weeks.json", function(error, json) {
@@ -71,28 +74,18 @@
 				loadFirstWeek(currentWeek);
 			});
 
-			var loadFirstWeek = function(currentWeek) {
-				yScale = d3.scale.linear()
-					// domain is 20 to 420 so that Lo and Hi values changed to 39 and 401 will be included, potentially
-					.domain([20, 420])
-					// range goes from h to 0 because of the lovely backwards way in which the SVG coord system works
-					.range([h, 0]);
-				xScale = d3.scale.linear()
-					// domain is 0 to 24 so that all hours of 24-hour day are included
-					.domain([0, 24])
-					.rangeRound([0, w]);
+			var loadData = function(currentWeek) {
 				dataset = d3.layout.histogram()
 					.value(function(d) { return d['blood_glucose']; })
 					// group the data into 20 bins
-					.bins(yScale.ticks(20))
+					.bins(yScaleForBins.ticks(20))
 					(currentWeek['Timestamped Readings']);
 				for (i = 0; i < dataset.length; i++) {
 					data = d3.layout.histogram()
 						.value(function(d) {
 							// TODO: remove manual timezone offset once fixed in Python
 							var t = new Date(d['timestamp'] + '-05:00');
-							h = t.getHours();
-							return h;
+							return t.getHours();
 						})
 						// group the data into bins by time of day
 						.bins(xScale.ticks(24))
@@ -101,12 +94,82 @@
 				}
 			};
 
+			var loadFirstWeek = function(currentWeek) {
+				yScaleForBins = d3.scale.linear()
+					// domain is 20 to 420 so that Lo and Hi values changed to 39 and 401 will be included, potentially
+					.domain([20, 420])
+					// range goes from h to 0 because of the lovely backwards way in which the SVG coord system works
+					.range([h, 0]);
+				xScale = d3.scale.linear()
+					// domain is 0 to 24 so that all hours of 24-hour day are included
+					.domain([0, 24])
+					.range([0, w]);
+				loadData(currentWeek);
+				yScale = d3.scale.linear()
+					.domain([0, dataByHour.length])
+					.range([h, 0]);
+				zScale = d3.scale.linear()
+					// d3.extent() = d3.min() AND d3.max(), returned as an array of [min, max]
+					.domain(d3.extent(dataByHour, function(data) {
+						var localMax =  d3.max(data, function(d) {
+							return d.y;
+						});
+						return localMax;
+					}))
+					.range(['white', 'blue'])
+					.interpolate(d3.interpolateLab);
+				yAxis = d3.svg.axis()
+					.scale(yScaleForBins)
+					.orient("left");
+				xAxis = d3.svg.axis()
+					.scale(xScale)
+					.orient("bottom");
+				for (j = 0; j < dataByHour.length; j++) {
+					data = dataByHour[j];
+					console.log(data);
+					svg.selectAll(".bin_" + j)
+					.data(data)
+					.enter()
+					.append("svg:rect")
+					.attr({
+						x: function(d) {
+							return xScale(d.x);
+						},
+						y: function() {
+							return yScale(j) - yScale(dataByHour.length - 1);
+						},
+						width: function(d) {
+							return xScale(1);
+						},
+						height: function(d) {
+							return yScale(dataByHour.length - 1);
+						},
+						fill: function(d) {
+							return zScale(d.y);
+						},
+						class: "bin_" + j
+					});					
+				}
+				svg.append("svg:g")
+					.attr("class", 'y axis')
+					.call(yAxis);
+				svg.append("svg:g")
+					.attr("class", 'x axis')
+					.attr('transform', 'translate(' + 0 + ',' + h + ')')
+					.call(xAxis);
+			};
+
+			var newWeek = function() {
+				
+			};
+
 			// advance to next week of data
 			d3.select('#next-week').on('click', function() {
 				if (!($(this).hasClass('disabled'))) {
 					var newIndex = weeks.indexOf(currentWeek) + 1;
 					currentWeek = weeks[newIndex];
-					newWeek(currentWeek);
+					loadData(currentWeek);
+					newWeek();
 					updateButton(newIndex);
 				}
 			});
@@ -116,7 +179,8 @@
 				if (!($(this).hasClass('disabled'))) {
 					var newIndex = weeks.indexOf(currentWeek) - 1;
 					currentWeek = weeks[newIndex];
-					newWeek(currentWeek);
+					loadData(currentWeek);
+					newWeek();
 					updateButton(newIndex);
 				}
 			});
