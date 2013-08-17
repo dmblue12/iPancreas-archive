@@ -84,8 +84,7 @@
 				for (i = 0; i < dataset.length; i++) {
 					data = d3.layout.histogram()
 						.value(function(d) {
-							// TODO: remove manual timezone offset once fixed in Python
-							var t = new Date(d['timestamp'] + '-05:00');
+							var t = new Date(d['timestamp']);
 							return t.getHours();
 						})
 						// group the data into bins by time of day
