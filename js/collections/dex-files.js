@@ -31,7 +31,8 @@ define(['underscore', 'backbone', 'models/dex-file', 'views/loaded'],
 				loadWindow.open();
 				loadWindow.setTopMost(true);
 				setTimeout(function() {
-					window.StudioReader(fileList, dataDir.nativePath());
+					// TODO: don't hardcode timezone! move into a settings model
+					window.StudioReader(fileList, '-5', false, dataDir.nativePath());
 					dexcomPath = dataDir.nativePath() + '/dexcom.json';
 					var d = window.DexcomStats(dexcomPath, [true, true, true]);
 					d.print_unit_JSON('days');
