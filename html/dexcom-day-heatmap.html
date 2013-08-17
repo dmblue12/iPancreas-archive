@@ -60,12 +60,13 @@
 			var dataset;
 			var dataByDay;
 			var xScale;
-			var yScaleForBins;
+			var xScaleForBins;
 			var yScale;
+			var yScaleForBins;
 			var zScale;
 			var yAxis;
 			var xAxis;
-			var dates = ['2012-12-31', '2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04', '2013-01-05', '2013-01-06'];
+			var dates = ['2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04', '2013-01-05', '2013-01-06', '2012-12-31'];
 			var currentWeek;
 
 			d3.json("../dexcom_weeks.json", function(error, json) {
@@ -86,10 +87,14 @@
 					data = d3.layout.histogram()
 						.value(function(d) {
 							var t = new Date(d['timestamp']);
-							return t.getDay();
+							var day = t.getDay();
+							if (day === 0) {
+								day = 7;
+							}
+							return day;
 						})
 						// group the data into bins by time of day
-						.bins(xScale.ticks(7))
+						.bins(xScaleForBins.ticks(7))
 						(dataset[i]);
 					dataByDay.push(data);
 				}
@@ -103,6 +108,10 @@
 					.domain([20, 420])
 					// range goes from h to 0 because of the lovely backwards way in which the SVG coord system works
 					.range([h, 0]);
+				xScaleForBins = d3.scale.linear()
+					// domain is 0 to 7 so that all days of the week are included
+					.domain([1, 8])
+					.range([0, w]);
 				xScale = d3.scale.linear()
 					// domain is 0 to 7 so that all days of the week are included
 					.domain([0, 7])
@@ -141,13 +150,13 @@
 					.append("svg:rect")
 					.attr({
 						x: function(d) {
-							return xScale(d.x);
+							return xScaleForBins(d.x);
 						},
 						y: function() {
 							return yScale(j) - yScale(dataByDay.length - 1);
 						},
 						width: function(d) {
-							return xScale(1);
+							return xScaleForBins(2);
 						},
 						height: function(d) {
 							return yScale(dataByDay.length - 1);
