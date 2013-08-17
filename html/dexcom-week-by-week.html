@@ -69,6 +69,7 @@
 			var yScale;
 			var yAxis;
 			var currentWeek;
+			var startDate;
 
 			d3.json("../dexcom_weeks.json", function(error, json) {
 				if (error) { return console.warn(error); }
@@ -88,7 +89,17 @@
 					// group the data into 20 bins
 					.bins(yScale.ticks(20))
 					(currentWeek['Blood Glucose Values']);
-				$('#week-of').html("Week of " + currentWeek['Start Date']);
+				startDate = new Date(currentWeek['Start Date']);
+				var startYear = startDate.getFullYear();
+				var startMonth = startDate.getMonth();
+				var startCal = startDate.getDate();
+				var startDay = startDate.getDay();
+				var diff = startDay - 1;
+				if (startDay !== 1) {
+					startDate = new Date(startYear, startMonth, startCal - diff);
+					console.log(startDate);
+				}
+				$('#week-of').html("Week of " + startDate.toDateString());
 				xScale = d3.scale.linear()
 					// domain is 0 to the max frequency of BG readings in a bin
 					// (which is d.y since the histogram layout is designed to do vertical, not horizontal histograms)
@@ -253,7 +264,17 @@
 					.value(function(d) {return d; })
 					.bins(yScale.ticks(19))
 					(currentWeek['Blood Glucose Values']);
-				$('#week-of').html("Week of " + currentWeek['Start Date']);
+				startDate = new Date(currentWeek['Start Date']);
+				var startYear = startDate.getFullYear();
+				var startMonth = startDate.getMonth();
+				var startCal = startDate.getDate();
+				var startDay = startDate.getDay();
+				var diff = startDay - 1;
+				if (startDay !== 1) {
+					startDate = new Date(startYear, startMonth, startCal - diff);
+					console.log(startDate);
+				}
+				$('#week-of').html("Week of " + startDate.toDateString());
 				// update scales
 				xScale.domain([0, d3.max(dataset, function(d) { return d.y; })])
 					.range([0, w]);

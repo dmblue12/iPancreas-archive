@@ -66,6 +66,7 @@
 			var yAxis;
 			var xAxis;
 			var currentWeek;
+			var startDate;
 
 			d3.json("../dexcom_weeks.json", function(error, json) {
 				if (error) { return console.warn(error); }
@@ -75,6 +76,16 @@
 			});
 
 			var loadData = function(currentWeek) {
+				startDate = new Date(currentWeek['Start Date']);
+				var startYear = startDate.getFullYear();
+				var startMonth = startDate.getMonth();
+				var startCal = startDate.getDate();
+				var startDay = startDate.getDay();
+				var diff = startDay - 1;
+				if (startDay !== 1) {
+					startDate = new Date(startYear, startMonth, startCal - diff);
+					console.log(startDate);
+				}
 				dataByHour = [];
 				dataset = d3.layout.histogram()
 					.value(function(d) { return d['blood_glucose']; })
@@ -95,7 +106,6 @@
 			};
 
 			var loadFirstWeek = function(currentWeek) {
-				$('#week-of').html("Week of " + currentWeek['Start Date']);
 				// yScaleforBins, xScale, yScale all static: no need to update with new data
 				yScaleForBins = d3.scale.linear()
 					// domain is 20 to 420 so that Lo and Hi values changed to 39 and 401 will be included, potentially
@@ -107,6 +117,7 @@
 					.domain([0, 24])
 					.range([0, w]);
 				loadData(currentWeek);
+				$('#week-of').html("Week of " + startDate.toDateString());
 				yScale = d3.scale.linear()
 					.domain([0, dataByHour.length])
 					.range([h, 0]);
@@ -170,7 +181,7 @@
 			};
 
 			var newWeek = function(direction) {
-				$('#week-of').html("Week of " + currentWeek['Start Date']);
+				$('#week-of').html("Week of " + startDate.toDateString());
 				// update zScale
 				zScale.domain(d3.extent(dataByHour, function(data) {
 						var localMax =  d3.max(data, function(d) {
