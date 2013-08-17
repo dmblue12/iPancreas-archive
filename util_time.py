@@ -92,6 +92,7 @@ def dexcom_to_ISO8601(t, offset = "", asUTC = False):
 def parse_timestamp(timestamp):
 	"""Returns the Python datetime representation of an ISO 8601 format timestamp."""
 
+	timestamp = timestamp[:-6]
 	return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
 
 def increment_date(timestamp):
@@ -128,9 +129,9 @@ def get_start_time(timestamp1, timestamp2):
 def get_end_time(timestamp1, timestamp2):
 	"""Returns the later of two timestamps and the date of the later timestamp."""
 
-	t1 = datetime.strptime(timestamp1, '%Y-%m-%dT%H:%M:%S')
+	t1 = parse_timestamp(timestamp1)
 
-	t2 = datetime.strptime(timestamp2, '%Y-%m-%dT%H:%M:%S')
+	t2 = parse_timestamp(timestamp2)
 
 	if t1 > t2:
 		return t1, t1.date()
