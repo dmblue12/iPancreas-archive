@@ -40,7 +40,7 @@
 			</div>
 		</div>
 		<script type="text/javascript">
-			var margin = {top: 20, right: 10, bottom: 20, left: 70};
+			var margin = {top: 20, right: 20, bottom: 20, left: 70};
 			// 60px of padding (difference between left and right margins) to allow for y-axis on left
 			var pad = margin.left - margin.right;
 
@@ -127,7 +127,15 @@
 					.orient("left");
 				xAxis = d3.svg.axis()
 					.scale(xScale)
-					.orient("bottom");
+					.orient("bottom")
+					// this is a bit hacky to get properly formatted hourly ticks by creating a Date object out of the integer ticks and formatting that
+					.tickFormat(function(d) {
+						var dt = new Date();
+						dt.setHours(d);
+						dt.setMinutes(0);
+						var formatTime = d3.time.format('%H:%M');
+						return formatTime(dt);
+					});
 				for (j = 0; j < dataByHour.length; j++) {
 					data = dataByHour[j];
 					svg.selectAll(".bin_" + j)
