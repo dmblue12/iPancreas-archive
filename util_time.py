@@ -19,18 +19,32 @@ class DexcomInternalTime(tzinfo):
 
 class UserTime(tzinfo):
 
-	def __init__(self, offset, daylight = True):
+	def __init__(self, offset):
 		self.offset = offset
-		self.daylight = daylight
 
 	def utcoffset(self, dt):
-		return timedelta(hours=int(self.offset))
+		return self.dst(dt)
 
 	def dst(self, dt):
-		if self.daylight:
-			return timedelta(hours=int(self.offset) + 1)
-		else:
+		if dt.year == 2011:
+			start = datetime(2011, 3, 13, 2, 0, 0)
+			end = datetime(2011, 11, 6, 2, 0, 0)
+		elif dt.year == 2012:
+			start = datetime(2012, 3, 11, 2, 0, 0)
+			end = datetime(2012, 11, 4, 2, 0, 0)
+		elif dt.year == 2013:
+			start = datetime(2013, 3, 10, 2, 0, 0)
+			end = datetime(2013, 11, 3, 2, 0, 0)
+		elif dt.year == 2013:
+			start = datetime(2014, 3, 9, 2, 0, 0)
+			end = datetime(2014, 11, 2, 2, 0, 0)
+
+		dt = dt.replace(tzinfo=None)
+
+		if dt < start or dt >= end:
 			return timedelta(hours=int(self.offset))
+		elif end > dt >= start:
+			return timedelta(hours=int(self.offset) + 1)
 
 	def tzname(self, dt):
 		return "User Time"
@@ -46,10 +60,10 @@ class UTC(tzinfo):
 	def tzname(self, dt):
 		return "UTC"
 
-def dexcom_to_ISO8601(t, offset = ""):
+def dexcom_to_ISO8601(t, offset = "", asUTC = False):
 	"""Translates string Dexcom Studio timestamp to ISO 8601 standard format UTC."""
 
-	if offset != "":
+	if asUTC:
 		dextime = DexcomInternalTime(offset)
 		try:
 			pt = datetime.strptime(t, '%Y-%m-%d %H:%M:%S')
@@ -64,17 +78,21 @@ def dexcom_to_ISO8601(t, offset = ""):
 			return ""
 
 	else:
+		usertime = UserTime(offset)
 		try:
 			pt = datetime.strptime(t, '%Y-%m-%d %H:%M:%S')
 		except ValueError:
 			pt = datetime.strptime(t, '%Y-%m-%d %H:%M:%S.%f')
 			pt = pt.replace(microsecond=0)
+		pt = pt.replace(tzinfo=usertime)
+		pt = pt.astimezone(usertime)
 
 	return pt.isoformat()
 
 def parse_timestamp(timestamp):
 	"""Returns the Python datetime representation of an ISO 8601 format timestamp."""
 
+	timestamp = timestamp[:-6]
 	return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S')
 
 def increment_date(timestamp):
@@ -111,9 +129,9 @@ def get_start_time(timestamp1, timestamp2):
 def get_end_time(timestamp1, timestamp2):
 	"""Returns the later of two timestamps and the date of the later timestamp."""
 
-	t1 = datetime.strptime(timestamp1, '%Y-%m-%dT%H:%M:%S')
+	t1 = parse_timestamp(timestamp1)
 
-	t2 = datetime.strptime(timestamp2, '%Y-%m-%dT%H:%M:%S')
+	t2 = parse_timestamp(timestamp2)
 
 	if t1 > t2:
 		return t1, t1.date()

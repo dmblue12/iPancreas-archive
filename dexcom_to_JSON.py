@@ -6,9 +6,13 @@ import util_time
 class StudioReader():
     """Reads Dexcom Studio .csv export file and encodes to JSON."""
 
-    def __init__(self, dex, path, output = ""):
+    def __init__(self, dex, tz, pretty, path, output = ""):
 
         self.dexcom = {'Calibrations': [], 'Readings': []}
+
+        self.timezone = tz
+
+        self.pretty = pretty
 
         self.output_filename = output
 
@@ -59,8 +63,8 @@ class StudioReader():
             elif numeric == "High":
                 numeric = "401"
             int_numeric = int(numeric)
-            readings.append({"timestamp": util_time.dexcom_to_ISO8601(row[3]),
-                "UTC_timestamp": util_time.dexcom_to_ISO8601(row[2], offset),
+            readings.append({"timestamp": util_time.dexcom_to_ISO8601(row[3], self.timezone),
+                "UTC_timestamp": util_time.dexcom_to_ISO8601(row[2], offset, True),
                 "blood_glucose": int_numeric})
 
     def _get_calibs(self, offset):
@@ -80,8 +84,8 @@ class StudioReader():
                 numeric = "401"
             if numeric != "":
                 int_numeric = int(numeric)
-                calibs.append({"timestamp": util_time.dexcom_to_ISO8601(row[6]),
-                    "UTC_timestamp": util_time.dexcom_to_ISO8601(row[5], offset),
+                calibs.append({"timestamp": util_time.dexcom_to_ISO8601(row[6], self.timezone),
+                    "UTC_timestamp": util_time.dexcom_to_ISO8601(row[5], offset, True),
                     "blood_glucose": int_numeric})
 
     def create_JSON(self, path):
@@ -96,20 +100,25 @@ class StudioReader():
                 filename = path + "/dexcom.json"
 
         with open(filename, 'w') as f:
-            print >> f, json.dumps(self.dexcom, sort_keys=True, indent=4, separators=(',', ': '))
+            if self.pretty:
+                print >> f, json.dumps(self.dexcom, sort_keys=True, indent=4, separators=(',', ': '))
+            else:
+                print >> f, json.dumps(self.dexcom, sort_keys=True, separators=(',', ':'))
 
 def main():
     parser = argparse.ArgumentParser(description='Process the input Dexcom Studio file.')
+    parser.add_argument('timezone', action='store', help='User timezone offset from UTC as {+-}H')
     parser.add_argument('dexcom_file', nargs='+', action='store', help='name of Dexcom Studio \
         .csv file and optional Dexcom internal timezone offset as {+-}H')
     parser.add_argument('-o', '--output', action='store', dest='output', help="name of output file; default is 'dexcom.json'")
+    parser.add_argument('-p', '--pretty', action='store_true', dest='pretty', help="pretty print JSON")
 
     args = parser.parse_args()
 
     if args.output:
-        d = StudioReader(args.dexcom_file, "", args.output)
+        d = StudioReader(args.dexcom_file, args.timezone, args.pretty, "", args.output)
     else:
-        d = StudioReader(args.dexcom_file, "")
+        d = StudioReader(args.dexcom_file, args.timezone, args.pretty, "")
 
 if __name__ == '__main__':
     main()
