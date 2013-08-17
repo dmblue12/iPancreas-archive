@@ -28,7 +28,7 @@
 		<div class="container">
 			<div class="hero-unit" id="main">
 				<p class="lead">
-					Dexcom Data: Week by Week
+					Dexcom Data: Heatmap by Hour of Day
 				</p>
 				<div>
 					<h4 id="week-of"></h4>
@@ -58,7 +58,7 @@
 				// effectively this sets the origin point of the actual data viz to the inside of the top and left margins
 				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 			var dataset;
-			var dataByHour = [];
+			var dataByHour;
 			var xScale;
 			var yScaleForBins;
 			var yScale;
@@ -75,6 +75,7 @@
 			});
 
 			var loadData = function(currentWeek) {
+				dataByHour = [];
 				dataset = d3.layout.histogram()
 					.value(function(d) { return d['blood_glucose']; })
 					// group the data into 20 bins
@@ -95,6 +96,8 @@
 			};
 
 			var loadFirstWeek = function(currentWeek) {
+				$('#week-of').html("Week of " + currentWeek['Start Date']);
+				// yScaleforBins, xScale, yScale all static: no need to update with new data
 				yScaleForBins = d3.scale.linear()
 					// domain is 20 to 420 so that Lo and Hi values changed to 39 and 401 will be included, potentially
 					.domain([20, 420])
@@ -108,6 +111,7 @@
 				yScale = d3.scale.linear()
 					.domain([0, dataByHour.length])
 					.range([h, 0]);
+				// zScale dependent on data, needs updated with new data
 				zScale = d3.scale.linear()
 					// d3.extent() = d3.min() AND d3.max(), returned as an array of [min, max]
 					.domain(d3.extent(dataByHour, function(data) {
@@ -126,7 +130,6 @@
 					.orient("bottom");
 				for (j = 0; j < dataByHour.length; j++) {
 					data = dataByHour[j];
-					console.log(data);
 					svg.selectAll(".bin_" + j)
 					.data(data)
 					.enter()
@@ -159,8 +162,48 @@
 					.call(xAxis);
 			};
 
-			var newWeek = function() {
-				
+			var newWeek = function(direction) {
+				$('#week-of').html("Week of " + currentWeek['Start Date']);
+				// update zScale
+				zScale.domain(d3.extent(dataByHour, function(data) {
+						var localMax =  d3.max(data, function(d) {
+							return d.y;
+						});
+						return localMax;
+					}))
+					.range(['white', 'blue'])
+					.interpolate(d3.interpolateLab);
+				// bind new data
+				for (j = 0; j < dataByHour.length; j++) {
+					data = dataByHour[j];
+					svg.selectAll(".bin_" + j)
+					.data(data)
+					.transition()
+					.delay(function(d, i) {
+						// direction of transitioning tiles dependent on whether previous or next week button was pressed
+						if (direction === "previous") {
+							return (23 * 25) - (25 * i);
+						}
+						else {
+							return i * 25;
+						}					})
+					.attr("width", function() {
+						return xScale(1) * 0.75;
+					})
+					.each("end", function() {
+						d3.select(this)
+							.transition()
+							.ease("linear")
+							.attr({
+								fill: function(d) {
+									return zScale(d.y);
+								},
+								width: function() {
+									return xScale(1);
+								}
+							});
+					});				
+				}
 			};
 
 			// advance to next week of data
@@ -169,7 +212,7 @@
 					var newIndex = weeks.indexOf(currentWeek) + 1;
 					currentWeek = weeks[newIndex];
 					loadData(currentWeek);
-					newWeek();
+					newWeek("next");
 					updateButton(newIndex);
 				}
 			});
@@ -180,7 +223,7 @@
 					var newIndex = weeks.indexOf(currentWeek) - 1;
 					currentWeek = weeks[newIndex];
 					loadData(currentWeek);
-					newWeek();
+					newWeek("previous");
 					updateButton(newIndex);
 				}
 			});
