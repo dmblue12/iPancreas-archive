@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>
+			Week by Week Summaries of Dexcom Data with D3
+		</title>
+		<script type="text/javascript" src="../d3-branch/js/d3.v3.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+		<link href="../d3-branch/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<style type="text/css">
+			.axis path, .axis line {
+					  fill: none;
+					  stroke: #000;
+					  shape-rendering: crispEdges;
+					}
+			text {
+				font-family: sans-serif;
+				font-size: 12px;
+			}
+/* crispEdges incompatible with rounded corners */
+			rect {
+				shape-rendering: crispEdges;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="hero-unit" id="main">
+				<p class="lead">
+					Dexcom Data: Heatmap by Day of the Week
+				</p>
+				<div>
+					<h4 id="week-of"></h4>
+					<div id="week-buttons" class="btn-group pull-right">
+						<button id="previous-week" class="btn disabled">Previous Week</button>
+						<button id="next-week" class="btn">Next Week</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var margin = {top: 20, right: 10, bottom: 20, left: 70};
+			// 60px of padding (difference between left and right margins) to allow for y-axis on left
+			var pad = margin.left - margin.right;
+
+			// 780 x 440 will be dimensions of SVG element
+			var w = 780 - margin.left - margin.right;
+			var h = 440 - margin.top - margin.bottom;
+
+			// set up svg
+			var svg = d3.select("#main")
+				.append("svg:svg")
+				.attr("width", w + margin.left + margin.right)
+				.attr("height", h + margin.top + margin.bottom)
+				.append("svg:g")
+				// translate changes the relative 0,0 of the elements (and all embedded elements) to the specified x, y
+				// effectively this sets the origin point of the actual data viz to the inside of the top and left margins
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			var dataset;
+			var dataByDay;
+			var xScale;
+			var yScaleForBins;
+			var yScale;
+			var zScale;
+			var yAxis;
+			var xAxis;
+			var currentWeek;
+
+			d3.json("../dexcom_weeks.json", function(error, json) {
+				if (error) { return console.warn(error); }
+				weeks = json["Weeks"];
+				currentWeek = weeks[0];
+				loadFirstWeek(currentWeek);
+			});
+
+			var loadData = function(currentWeek) {
+				dataByDay = [];
+				dataset = d3.layout.histogram()
+					.value(function(d) { return d['blood_glucose']; })
+					// group the data into 20 bins
+					.bins(yScaleForBins.ticks(20))
+					(currentWeek['Timestamped Readings']);
+				for (i = 0; i < dataset.length; i++) {
+					data = d3.layout.histogram()
+						.value(function(d) {
+							// TODO: remove manual timezone offset once fixed in Python
+							var t = new Date(d['timestamp'] + '-05:00');
+							return t.getDay();
+						})
+						// group the data into bins by time of day
+						.bins(xScale.ticks(7))
+						(dataset[i]);
+					dataByDay.push(data);
+				}
+			};
+
+			var loadFirstWeek = function(currentWeek) {
+				$('#week-of').html("Week of " + currentWeek['Start Date']);
+				// yScaleforBins, xScale, yScale all static: no need to update with new data
+				yScaleForBins = d3.scale.linear()
+					// domain is 20 to 420 so that Lo and Hi values changed to 39 and 401 will be included, potentially
+					.domain([20, 420])
+					// range goes from h to 0 because of the lovely backwards way in which the SVG coord system works
+					.range([h, 0]);
+				xScale = d3.scale.linear()
+					// domain is 0 to 7 so that all days of the week are included
+					.domain([0, 7])
+					.range([0, w]);
+				loadData(currentWeek);
+				yScale = d3.scale.linear()
+					.domain([0, dataByDay.length])
+					.range([h, 0]);
+				// zScale dependent on data, needs updated with new data
+				zScale = d3.scale.linear()
+					// d3.extent() = d3.min() AND d3.max(), returned as an array of [min, max]
+					.domain(d3.extent(dataByDay, function(data) {
+						var localMax =  d3.max(data, function(d) {
+							return d.y;
+						});
+						return localMax;
+					}))
+					.range(['white', 'blue'])
+					.interpolate(d3.interpolateLab);
+				yAxis = d3.svg.axis()
+					.scale(yScaleForBins)
+					.orient("left");
+				xAxis = d3.svg.axis()
+					.scale(xScale)
+					.orient("bottom");
+				for (j = 0; j < dataByDay.length; j++) {
+					data = dataByDay[j];
+					svg.selectAll(".bin_" + j)
+					.data(data)
+					.enter()
+					.append("svg:rect")
+					.attr({
+						x: function(d) {
+							return xScale(d.x);
+						},
+						y: function() {
+							return yScale(j) - yScale(dataByDay.length - 1);
+						},
+						width: function(d) {
+							return xScale(1);
+						},
+						height: function(d) {
+							return yScale(dataByDay.length - 1);
+						},
+						fill: function(d) {
+							return zScale(d.y);
+						},
+						class: "bin_" + j
+					});					
+				}
+				svg.append("svg:g")
+					.attr("class", 'y axis')
+					.call(yAxis);
+				svg.append("svg:g")
+					.attr("class", 'x axis')
+					.attr('transform', 'translate(' + 0 + ',' + h + ')')
+					.call(xAxis);
+			};
+
+			var newWeek = function(direction) {
+				$('#week-of').html("Week of " + currentWeek['Start Date']);
+				// update zScale
+				zScale.domain(d3.extent(dataByDay, function(data) {
+						var localMax =  d3.max(data, function(d) {
+							return d.y;
+						});
+						return localMax;
+					}))
+					.range(['white', 'blue'])
+					.interpolate(d3.interpolateLab);
+				// bind new data
+				for (j = 0; j < dataByDay.length; j++) {
+					data = dataByDay[j];
+					svg.selectAll(".bin_" + j)
+					.data(data)
+					.transition()
+					.delay(function(d, i) {
+						// direction of transitioning tiles dependent on whether previous or next week button was pressed
+						if (direction === "previous") {
+							return (23 * 25) - (25 * i);
+						}
+						else {
+							return i * 25;
+						}					})
+					.attr("width", function() {
+						return xScale(1) * 0.75;
+					})
+					.each("end", function() {
+						d3.select(this)
+							.transition()
+							.ease("linear")
+							.attr({
+								fill: function(d) {
+									return zScale(d.y);
+								},
+								width: function() {
+									return xScale(1);
+								}
+							});
+					});				
+				}
+			};
+
+			// advance to next week of data
+			d3.select('#next-week').on('click', function() {
+				if (!($(this).hasClass('disabled'))) {
+					var newIndex = weeks.indexOf(currentWeek) + 1;
+					currentWeek = weeks[newIndex];
+					loadData(currentWeek);
+					newWeek("next");
+					updateButton(newIndex);
+				}
+			});
+
+			// go back to previous week of data
+			d3.select('#previous-week').on('click', function() {
+				if (!($(this).hasClass('disabled'))) {
+					var newIndex = weeks.indexOf(currentWeek) - 1;
+					currentWeek = weeks[newIndex];
+					loadData(currentWeek);
+					newWeek("previous");
+					updateButton(newIndex);
+				}
+			});
+
+			var updateButton = function(weekIndex) {
+				if ((weekIndex > 0) && (weekIndex < weeks.length - 1)) {
+					$('#week-buttons button').removeClass('disabled');
+				}
+				else if (weekIndex == 0) {
+					$('#previous-week').addClass('disabled');
+				}
+				else if (weekIndex == weeks.length -1) {
+					$('#next-week').addClass('disabled');
+				}
+			};
+		</script>
+	</body>
+</html>
