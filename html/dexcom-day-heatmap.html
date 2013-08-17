@@ -65,6 +65,7 @@
 			var zScale;
 			var yAxis;
 			var xAxis;
+			var dates = ['2012-12-31', '2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04', '2013-01-05', '2013-01-06'];
 			var currentWeek;
 
 			d3.json("../dexcom_weeks.json", function(error, json) {
@@ -127,7 +128,12 @@
 					.orient("left");
 				xAxis = d3.svg.axis()
 					.scale(xScale)
-					.orient("bottom");
+					.orient("bottom")
+					.tickFormat(function(d) {
+						var dt = new Date(dates[d]);
+						var formatDay = d3.time.format('%A');
+						return formatDay(dt);
+					});
 				for (j = 0; j < dataByDay.length; j++) {
 					data = dataByDay[j];
 					svg.selectAll(".bin_" + j)
@@ -160,6 +166,9 @@
 					.attr("class", 'x axis')
 					.attr('transform', 'translate(' + 0 + ',' + h + ')')
 					.call(xAxis);
+				// centers xAxis ticks
+				svg.selectAll('.axis.x text')
+					.attr('dx', xScale(1)/2);
 			};
 
 			var newWeek = function(direction) {
