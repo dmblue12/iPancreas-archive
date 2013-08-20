@@ -2,7 +2,8 @@ import argparse
 import json
 import math
 import numpy
-import pandas
+from pandas import Series, DataFrame
+import pandas as pd
 import util_time
 
 class DexcomStats():
@@ -54,6 +55,7 @@ class DexcomStats():
 				day.print_summary()
 			# populate each day's just_readings array
 			day.just_readings = [reading['blood_glucose'] for reading in day.readings]
+			self._crunch_all(day)
 
 		self.dates.sort()
 
@@ -71,8 +73,6 @@ class DexcomStats():
 			# method to split data into DexcomYear objects
 			self._split_by_year()
 			self.units['years'] = self.years
-
-		self._crunch_all()
 
 	def _split_by_day(self):
 		"""Split data into daily batches."""
@@ -338,12 +338,10 @@ class DexcomStats():
 		if len(segment) > 1:
 			unit.continuous_segments.append(segment)
 
-	def _crunch_all(self):
-		"""Call all statistic-calculating methods for each day with data."""
+	def _crunch_all(self, unit):
+		"""Call all statistic-calculating methods for each unit with data."""
 
-		for date in self.dates:
-			d = self.days[date]
-			d.calculate_GVI_and_PGS()
+		unit.calculate_GVI_and_PGS()
 
 	def print_unit_JSON(self, unit):
 		"""Call DexcomX.toJSON() method for each unit and dump to a JSON file."""
