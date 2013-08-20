@@ -26,6 +26,9 @@
 			rect:hover {
 				fill: gold;
 			}
+			rect.no_readings:hover {
+				fill: white;
+			}
 		</style>
 	</head>
 	<body>
@@ -143,7 +146,7 @@
 						});
 						return localMax;
 					}))
-					.range(['white', 'blue'])
+					.range(['white', 'purple'])
 					.interpolate(d3.interpolateLab);
 				yAxis = d3.svg.axis()
 					.scale(yScaleForBins)
@@ -187,11 +190,19 @@
 						return "Between " + Math.round(yScale(l)) + " and " + parseInt(Math.round(yScale(l)) + 20) + " mg/dL";
 					})
 					.attr("data-content", function(d) {
+						// remove old 'no_readings' class
+						var current_class = $(this).attr("class");
+						$(this).attr("class", current_class.replace(' no_readings', ''));
+						current_class = $(this).attr("class");
 						if (d.y === 1) {
 							return d.y + " reading";
 						}
+						else if (d.y === 0) {
+							$(this).attr("class", current_class + " no_readings");
+							return d.y + " readings";
+						}
 						return d.y + " readings";
-					});			
+					});		
 				}
 				// initialize popovers
 				$('[class^=bin]').popover({
@@ -199,6 +210,7 @@
 					container: "#top",
 					html: true
 				});
+				$('.no_readings').popover('destroy');
 				svg.append("svg:g")
 					.attr("class", 'y axis')
 					.call(yAxis);
@@ -220,7 +232,7 @@
 						});
 						return localMax;
 					}))
-					.range(['white', 'blue'])
+					.range(['white', 'purple'])
 					.interpolate(d3.interpolateLab);
 				// bind new data
 				for (j = 0; j < dataByDay.length; j++) {
@@ -254,11 +266,19 @@
 					})
 					// update popover data
 					.attr("data-content", function(d) {
+						// remove old 'no_readings' class
+						var current_class = $(this).attr("class");
+						$(this).attr("class", current_class.replace(' no_readings', ''));
+						current_class = $(this).attr("class");
 						if (d.y === 1) {
 							return d.y + " reading";
 						}
+						else if (d.y === 0) {
+							$(this).attr("class", current_class + " no_readings");
+							return d.y + " readings";
+						}
 						return d.y + " readings";
-					});				
+					});		
 				}
 				// destroy old popovers
 				$('[class^=bin]').popover('destroy');
@@ -272,6 +292,7 @@
 					container: "#top",
 					html: true
 				});
+				$('.no_readings').popover('destroy');
 			};
 
 			// advance to next week of data
