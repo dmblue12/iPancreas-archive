@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Weekly-Batched Dexcom Data: D3 Visualizations</title>
+		<script type="text/javascript" src="../d3-branch/js/jquery-1.9.1.min.js"></script>
+		<link href="../d3-branch/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<script type="text/javascript" src="../d3-branch/js/bootstrap.min.js"></script>
+		<style type="text/css">
+			#top {
+				padding-top: 30px;
+			}
+			.hero-unit {
+				background: #DCDCDC;
+				padding: 30px 60px;
+				margin-bottom: 0px;
+			}
+			img.carousel-img {
+				width: 700px;
+				height: 330px;
+				margin: auto;
+				border: 2px solid white;
+			}
+		    .carousel-caption {
+		      background-color: transparent;
+		      position: static;
+		      max-width: 800px;
+		      padding: 0 20px;
+		      margin-top: 20px;
+		    }
+		    .carousel-caption h1,
+		    .carousel-caption .lead {
+		      margin: 0;
+		      line-height: 1.25;
+		      color: #4F4F4F;
+		      text-shadow: 0 1px 1px rgba(0,0,0,.4);
+		    }
+		</style>
+	</head>
+	<body>
+		<div class="container" id="top">
+			<div class="hero-unit">
+				<div id="myCarousel" class="carousel slide">
+					<div class="carousel-inner">
+						<div class="item active">
+							<img class="carousel-img" src="../img/histogram.png" />
+							<div class="container-narrow">
+								<div class="carousel-caption">
+									<h1>Histogram</h1>
+									<p class="lead">This horizontal histogram provides a quick summary view of an entire week's worth of blood glucose values, where each bar represents a 20-point range of blood glucose values (in mg/dL).</p>
+									<a class="btn btn-inverse pull-right" target="_blank" href="http://janabeck.com/iPancreas/examples/html/dexcom-week-by-week.html">View this visualization</a>
+								</div>
+							</div>
+						</div>
+						<div class="item">
+							<img class="carousel-img" src="../img/hour-heat-map.png" />
+							<div class="container-narrow">
+								<div class="carousel-caption">
+									<h1>Heat Map by Hour of Day</h1>
+									<p class="lead">This heat map shows the distribution of a week's worth of blood glucose values by the hour of the day and by bin, where each bin represents a 20-point range of blood glucose values.</p>
+									<a class="btn btn-inverse pull-right" target="_blank" href="http://janabeck.com/iPancreas/examples/html/dexcom-hour-heatmap.html">View this visualization</a>
+								</div>
+							</div>
+						</div>
+						<div class="item">
+							<img class="carousel-img" src="../img/day-heat-map.png" />
+							<div class="container-narrow">
+								<div class="carousel-caption">
+									<h1>Heat Map by Day of Week</h1>
+									<p class="lead">This heat map shows the distribution of a week's worth of blood glucose values according to the day of the week and by bin, where each bin represents a 20-point range of blood glucose values.</p>
+									<a class="btn btn-inverse pull-right" target="_blank" href="http://janabeck.com/iPancreas/examples/html/dexcom-day-heatmap.html">View this visualization</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<a class="left carousel-control" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+					<a class="right carousel-control" href="#myCarousel" data-slide="next">&rsaquo;</a>
+				</div>
+			</div>
+		</div>
+    <script>
+      !function ($) {
+        $(function(){
+          // carousel demo
+          $('#myCarousel').carousel()
+        })
+      }(window.jQuery)
+    </script>
+	</body>
+</html>
