@@ -8,6 +8,7 @@
 		<script type="text/javascript" src="../d3-branch/js/d3.v3.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
 		<link href="../d3-branch/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<script type="text/javascript" src="../d3-branch/js/bootstrap.min.js"></script>
 		<style type="text/css">
 			.axis path, .axis line {
 					  fill: none;
@@ -22,10 +23,13 @@
 			rect {
 				shape-rendering: crispEdges;
 			}
+			rect:hover {
+				fill: gold;
+			}
 		</style>
 	</head>
 	<body>
-		<div class="container">
+		<div class="container" id="top">
 			<div class="hero-unit" id="main">
 				<p class="lead">
 					Dexcom Data: Heatmap by Day of the Week
@@ -86,7 +90,6 @@
 				var diff = startDay - 1;
 				if (startDay !== 1) {
 					startDate = new Date(startYear, startMonth, startCal - diff);
-					console.log(startDate);
 				}
 				dataByDay = [];
 				dataset = d3.layout.histogram()
@@ -175,9 +178,27 @@
 						fill: function(d) {
 							return zScale(d.y);
 						},
-						class: "bin_" + j
-					});					
+						class: "bin_" + j,
+						"data-toggle": "popover"
+					})
+					// data attributes for popovers
+					.attr("title", function() {
+						var l = dataByDay.length - j - 1;
+						return "Between " + Math.round(yScale(l)) + " and " + parseInt(Math.round(yScale(l)) + 20) + " mg/dL";
+					})
+					.attr("data-content", function(d) {
+						if (d.y === 1) {
+							return d.y + " reading";
+						}
+						return d.y + " readings";
+					});			
 				}
+				// initialize popovers
+				$('[class^=bin]').popover({
+					trigger: "hover",
+					container: "#top",
+					html: true
+				});
 				svg.append("svg:g")
 					.attr("class", 'y axis')
 					.call(yAxis);
@@ -230,8 +251,27 @@
 									return xScale(1);
 								}
 							});
+					})
+					// update popover data
+					.attr("data-content", function(d) {
+						if (d.y === 1) {
+							return d.y + " reading";
+						}
+						return d.y + " readings";
 					});				
 				}
+				// destroy old popovers
+				$('[class^=bin]').popover('destroy');
+				// update popover data
+				$('[class^=bin]').data('content', function() {
+					return $(this).attr('data-content');
+				});
+				// initialize popovers
+				$('[class^=bin]').popover({
+					trigger: "hover",
+					container: "#top",
+					html: true
+				});
 			};
 
 			// advance to next week of data
