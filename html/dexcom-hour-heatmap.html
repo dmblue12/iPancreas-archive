@@ -133,8 +133,8 @@
 						});
 						return localMax;
 					}))
-					.range(['white', 'blue'])
-					.interpolate(d3.interpolateLab);
+					.range(['white', 'green'])
+					.interpolate(d3.interpolateHcl);
 				yAxis = d3.svg.axis()
 					.scale(yScaleForBins)
 					.orient("left");
@@ -214,8 +214,8 @@
 						});
 						return localMax;
 					}))
-					.range(['white', 'blue'])
-					.interpolate(d3.interpolateLab);
+					.range(['white', 'green'])
+					.interpolate(d3.interpolateHcl);
 				// bind new data
 				for (j = 0; j < dataByHour.length; j++) {
 					data = dataByHour[j];
