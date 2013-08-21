@@ -31,6 +31,8 @@ var app_router;
 
 var appModel;
 
+var dexcomBatches;
+
 // TideSDK variables
 var w = Ti.UI.currentWindow;
 

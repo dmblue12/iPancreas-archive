@@ -11,14 +11,10 @@ define([
 			el: '#app',
 
 			initialize: function() {
+
 				this.$main = this.$('#main');
 
 				this.html = _.template(startTemplate);
-
-				this.$main.append(this.html);
-
-				this.$('#welcome1').delay(2500).fadeOut(2500);
-				this.$('#welcome2').css('bottom', '10px').css('right', '10px').delay(2500).fadeOut(2500);
 
 				this.$svg = d3.select('#main')
 					.append('svg')
@@ -37,6 +33,11 @@ define([
 
 			render: function() {
 				console.log('Rendered AppView.');
+
+				this.$main.prepend(this.html);
+
+				this.$('#welcome1').delay(2500).fadeOut(2500);
+				this.$('#welcome2').css('bottom', '10px').css('right', '10px').delay(2500).fadeOut(2500);
 
 				app_router.navigate('#/menu/init');
 			},

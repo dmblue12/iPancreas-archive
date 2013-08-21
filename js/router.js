@@ -30,14 +30,74 @@ define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files
 			var historyList = appModel.get('forward');
 
 			app_router.on('route:index', function() {
-				require(['views/app'], function(AppView) {
+				require(['d3', 'views/app', 'models/dexcom-batch', 'collections/dexcom-batches'],
+					function(d3, AppView, DexcomBatch, DexcomBatches) {
 					if (!appModel.get('started')) {
+						var loadWindow = Ti.UI.createWindow({
+							id: "loadWindow",
+							url: "app://initializing.html",
+							title: "iPancreas: Initializing",
+							baseURL: "app://initializing.html",
+							midWidth: 960,
+							maxWidth: 960,
+							width: 960,
+							minHeight: 560,
+							maxHeight: 560,
+							height: 560,
+							maximizable: true,
+							minimizable: true,
+				            center: true,
+				            closeable: false,
+				            resizable: false,
+				            fullscreen: false,
+				            maximized: false,
+				            minimized: false,
+				            usingChrome: false,
+				            visible: true
+						});
+						loadWindow.open();
+						loadWindow.setTopMost(true);
 						appView = new AppView({model: appModel}, app_router);
+						dexcomBatches = new DexcomBatches([]);
+							
+						d3.json('file://' + dataDir.nativePath() + '/dexcom_weeks.json',
+							function(error, json) {
+								if (error) {
+									return console.warn(error);
+								}
+								var dexcomBatch = new DexcomBatch({id: 'weeks'});
+								dexcomBatch.set('data', json['Weeks']);
+								dexcomBatch.set('current', json['Weeks'][0]);
+								dexcomBatches.add(dexcomBatch);
+							d3.json('file://' + dataDir.nativePath() + '/dexcom_months.json',
+								function(error, json) {
+									if (error) {
+										return console.warn(error);
+									}
+									var dexcomBatch = new DexcomBatch({id: 'months'});
+									dexcomBatch.set('data', json['Months']);
+									dexcomBatch.set('current', json['Months'][0]);
+									dexcomBatches.add(dexcomBatch);
+								d3.json('file://' + dataDir.nativePath() + '/dexcom_years.json',
+									function(error, json) {
+										if (error) {
+											return console.warn(error);
+										}
+										var dexcomBatch = new DexcomBatch({id: 'years'});
+										dexcomBatch.set('data', json['Years']);
+										dexcomBatch.set('current', json['Years'][0]);
+										dexcomBatches.add(dexcomBatch);
+										loadWindow.close();
+										setTimeout(function() {
+											appView.render();
+										}, 500);
+								});
+							});
+						});
 					}
 					else {
 						$('.to-clear').remove();
 					}
-					appView.render();
 				});
 			});
 
@@ -74,10 +134,16 @@ define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files
 				});
 			});
 
-			app_router.on('route:showSummary', function(units) {
-				require(['views/summary'], function(SummaryView) {
-					var summaryView = new SummaryView({id: units});
+			app_router.on('route:showSummary', function(unit) {
+				require(['views/summary', 'models/focused-svg'], function(SummaryView, FocusedSVG) {
+
+					var f = new FocusedSVG();
+					var batch = dexcomBatches.get(unit);
+					f.set('data', batch.get('current'));
+					var summaryView = new SummaryView({id: unit, model: f});
 					summaryView.render();
+					summaryView.loadFirstUnit();
+
 					forwardHistory();
 				});
 			});
