@@ -35,10 +35,10 @@ define(['underscore', 'backbone', 'models/dex-file', 'views/loaded'],
 					window.StudioReader(fileList, '-5', false, dataDir.nativePath());
 					dexcomPath = dataDir.nativePath() + '/dexcom.json';
 					var d = window.DexcomStats(dexcomPath, [true, true, true]);
-					d.print_unit_JSON('days');
-					d.print_unit_JSON('weeks');
-					d.print_unit_JSON('months');
-					d.print_unit_JSON('years');
+					d.print_unit_JSON('days', false);
+					d.print_unit_JSON('weeks', false);
+					d.print_unit_JSON('months', false);
+					d.print_unit_JSON('years', false);
 					setTimeout(function() {
 						loadWindow.close();
 						$('.to-clear').remove();
