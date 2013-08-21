@@ -381,6 +381,13 @@ class DexcomStats():
 		for unit in sorted(self.units[unit].iteritems()):
 			unit[1].print_summary()
 
+	def print_yesterday_summary(self):
+		"""Call DexcomDay.print_summary() method for the second-to-last day of data."""
+
+		yesterday = self.dates[len(self.dates) - 2]
+
+		self.days[yesterday].print_summary()
+
 class GVI():
 	"""Glycemic Variability Index."""
 	"""As described here: http://www.diabetesmine.com/2012/11/a-new-view-of-glycemic-variability-how-long-is-your-line.html"""
@@ -720,6 +727,7 @@ def main():
 
     d = DexcomStats(args.dex_name, [args.weeks, args.months, args.years])
     d.print_unit_JSON('days', args.pretty)
+    d.print_yesterday_summary()
     # d.print_unit_summaries('days')
     if args.weeks:
     	d.print_unit_JSON('weeks', args.pretty)
