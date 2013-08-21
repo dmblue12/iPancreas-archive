@@ -1,7 +1,7 @@
 import argparse
 import json
 import math
-import numpy
+import numpy as np
 from pandas import Series, DataFrame
 import pandas as pd
 import util_time
@@ -216,6 +216,7 @@ class DexcomStats():
 				self._parse_continuous(week)
 				week._times()
 				week.calculate_GVI_and_PGS()
+				self._crunch_all(week)
 
 				# update last week
 				last_week = current_week
@@ -235,6 +236,7 @@ class DexcomStats():
 			self._parse_continuous(week)
 			week._times()
 			week.calculate_GVI_and_PGS()
+			self._crunch_all(week)
 
 	def _split_by_month(self):
 		"""Split data into monthly batches."""
@@ -253,6 +255,7 @@ class DexcomStats():
 				self._parse_continuous(month)
 				month._times()
 				month.calculate_GVI_and_PGS()
+				self._crunch_all(month)
 
 				# update last month
 				last_month = current_month
@@ -272,6 +275,7 @@ class DexcomStats():
 			self._parse_continuous(month)
 			month._times()
 			month.calculate_GVI_and_PGS()
+			self._crunch_all(month)
 
 	def _split_by_year(self):
 		"""Split data into yearly batches."""
@@ -290,6 +294,7 @@ class DexcomStats():
 				self._parse_continuous(year)
 				year._times()
 				year.calculate_GVI_and_PGS()
+				self._crunch_all(year)
 
 				# update last year
 				last_year = current_year
@@ -309,6 +314,7 @@ class DexcomStats():
 			self._parse_continuous(year)
 			year._times()
 			year.calculate_GVI_and_PGS()
+			self._crunch_all(year)
 
 	def _parse_continuous(self, unit):
 		"""Parse continuous segments of blood glucose readings for arbitrary (non-day) time batches (week, month, year)."""
@@ -343,7 +349,13 @@ class DexcomStats():
 
 		unit.calculate_GVI_and_PGS()
 
-	def print_unit_JSON(self, unit):
+		s = Series(unit.just_readings)
+
+		unit.summary = s.describe()
+
+		unit.median = s.median()
+
+	def print_unit_JSON(self, unit, pretty):
 		"""Call DexcomX.toJSON() method for each unit and dump to a JSON file."""
 
 		json_dict = {unit.capitalize(): []}
@@ -351,12 +363,17 @@ class DexcomStats():
 		for u in sorted(self.units[unit].iteritems()):
 			json_dict[unit.capitalize()].append(u[1].to_JSON())
 
+		if pretty:
+			dmps = json.dumps(json_dict, indent=4, separators=(',', ': '))
+		else:
+			dmps = json.dumps(json_dict, separators=(',', ':'))
+
 		if self.path != "":
 			with open(self.path + "/dexcom_%s.json" %unit, 'w') as f:
-				print >> f, json.dumps(json_dict, separators=(',', ':'))
+				print >> f, dmps
 		else:
 			with open("dexcom_%s.json" %unit, 'w') as f:
-				print >> f, json.dumps(json_dict, separators=(',', ':'))	
+				print >> f, dmps
 
 	def print_unit_summaries(self, unit):
 		"""Call DexcomX.print_summary() method for each unit with data."""
@@ -445,7 +462,7 @@ class PGS():
 		# tuple (min, max) target blood glucose range for calculating percentage of time in range (PTIR)
 		self.target_range = target_range
 
-		self.mean_glucose = numpy.mean(readings)
+		self.mean_glucose = np.mean(readings)
 
 		# Glycemic Variability Index
 		self.gvi = gvi
@@ -500,6 +517,8 @@ class DexcomDay():
 		# Patient Glycemic Status
 		self.pgs = 0
 
+		# summary statistics
+
 	def _times(self):
 		"""Fill in start and end times and dates."""
 
@@ -520,6 +539,27 @@ class DexcomDay():
 			print str(self.date) + " has (a) calibration(s) but no CGM readings."
 			print
 			self.end_time = util_time.parse_timestamp(self.calibrations[0]['timestamp'])
+
+	def _summary_to_dict(self):
+		"""Convert pandas summary statistics to a dictionary."""
+
+		dct = {}
+
+		quartiles = {}
+
+		dct['Median'] = trim_decimal(self.median)
+		dct['Mean'] = trim_decimal(np.round(self.summary['mean'], 0))
+		dct['Standard Deviation'] = trim_decimal(np.round(self.summary['std'], 0))
+		dct['Min'] = trim_decimal(self.summary['min'])
+		dct['Max'] = trim_decimal(self.summary['max'])
+		quartiles['Quarter'] = trim_decimal(np.round(self.summary['25%'], 0))
+		quartiles['Half'] = trim_decimal(np.round(self.summary['50%'], 0))
+		quartiles['Seventy-fifth'] = trim_decimal(np.round(self.summary['75%'], 0))
+		dct['Quartiles'] = quartiles
+		dct['Glycemic Variability Index'] = float("{:0.2f}".format(self.gvi))
+		dct['Patient Glycemic Status'] = float("{:0.1f}".format(self.pgs))
+
+		return dct
 
 	def calculate_GVI_and_PGS(self):
 		"""Calculate the glycemic variability index (GVI) for the given day."""
@@ -544,8 +584,7 @@ class DexcomDay():
 			'Continuous': self.continuous,
 			'Continuous Segments': self.continuous_segments,
 			'Blood Glucose Values': self.just_readings,
-			'Glycemic Variability Index': float("{:0.2f}".format(self.gvi)),
-			'Patient Glycemic Status': float("{:0.1f}".format(self.pgs))
+			'Summary Statistics': self._summary_to_dict()
 					}
 
 		return day_dict
@@ -578,8 +617,7 @@ class DexcomWeek(DexcomDay):
 			'Continuous': self.continuous,
 			'Continuous Segments': self.continuous_segments,
 			'Blood Glucose Values': self.just_readings,
-			'Glycemic Variability Index': float("{:0.2f}".format(self.gvi)),
-			'Patient Glycemic Status': float("{:0.1f}".format(self.pgs))
+			'Summary Statistics': self._summary_to_dict()
 					}
 
 		return week_dict
@@ -612,8 +650,7 @@ class DexcomMonth(DexcomDay):
 			'Continuous': self.continuous,
 			'Continuous Segments': self.continuous_segments,
 			'Blood Glucose Values': self.just_readings,
-			'Glycemic Variability Index': float("{:0.2f}".format(self.gvi)),
-			'Patient Glycemic Status': float("{:0.1f}".format(self.pgs))
+			'Summary Statistics': self._summary_to_dict()
 					}
 
 		return month_dict
@@ -646,8 +683,7 @@ class DexcomYear(DexcomDay):
 			'Continuous': self.continuous,
 			'Continuous Segments': self.continuous_segments,
 			'Blood Glucose Values': self.just_readings,
-			'Glycemic Variability Index': float("{:0.2f}".format(self.gvi)),
-			'Patient Glycemic Status': float("{:0.1f}".format(self.pgs))
+			'Summary Statistics': self._summary_to_dict()
 					}
 
 		return year_dict
@@ -664,6 +700,13 @@ class DexcomYear(DexcomDay):
 		print "Patient Glycemic Status: " + "%0.1f" %self.pgs
 		print
 
+def trim_decimal(n):
+	"""Print a statistic rounded with pandas to a integer without the trailing '.0'"""
+	try:
+		return int("{:.0f}".format(n))
+	except ValueError:
+		return "{:.0f}".format(n)
+
 def main():
 
     parser = argparse.ArgumentParser(description='Process the input Dexcom JSON file.')
@@ -671,20 +714,21 @@ def main():
     parser.add_argument('-w', '--weeks', action='store_true', dest="weeks", help='Generate dexcom_weeks.json output file')
     parser.add_argument('-m', '--months', action='store_true', dest="months", help='Generate dexcom_months.json output file')
     parser.add_argument('-y', '--years', action='store_true', dest="years", help='Generate dexcom_years.json output file')
+    parser.add_argument('-p', '--pretty', action='store_true', dest="pretty", help='Pretty print JSON')
 
     args = parser.parse_args()
 
     d = DexcomStats(args.dex_name, [args.weeks, args.months, args.years])
-    d.print_unit_JSON('days')
-    d.print_unit_summaries('days')
+    d.print_unit_JSON('days', args.pretty)
+    # d.print_unit_summaries('days')
     if args.weeks:
-    	d.print_unit_JSON('weeks')
+    	d.print_unit_JSON('weeks', args.pretty)
     	# d.print_unit_summaries('weeks')
     if args.months:
-    	d.print_unit_JSON('months')
+    	d.print_unit_JSON('months', args.pretty)
     	# d.print_unit_summaries('months')
     if args.years:
-    	d.print_unit_JSON('years')
+    	d.print_unit_JSON('years', args.pretty)
     	# d.print_unit_summaries('years')
 
 if __name__ == '__main__':
