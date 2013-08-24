@@ -106,8 +106,8 @@ class StudioReader():
                 print >> f, json.dumps(self.dexcom, sort_keys=True, separators=(',', ':'))
 
 def main():
-    parser = argparse.ArgumentParser(description='Process the input Dexcom Studio file.')
-    parser.add_argument('timezone', action='store', help='User timezone offset from UTC as {+-}H')
+    parser = argparse.ArgumentParser(description='Process the input Dexcom Studio export file and output a Dexcom JSON file.')
+    parser.add_argument('timezone', action='store', help='user timezone offset from UTC as {+-}H')
     parser.add_argument('dexcom_file', nargs='+', action='store', help='name of Dexcom Studio \
         .csv file and optional Dexcom internal timezone offset as {+-}H')
     parser.add_argument('-o', '--output', action='store', dest='output', help="name of output file; default is 'dexcom.json'")

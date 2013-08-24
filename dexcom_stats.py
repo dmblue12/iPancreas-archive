@@ -716,12 +716,12 @@ def trim_decimal(n):
 
 def main():
 
-    parser = argparse.ArgumentParser(description='Process the input Dexcom JSON file.')
-    parser.add_argument('dex_name', action = 'store', help='Name of Dexcom .json file')
-    parser.add_argument('-w', '--weeks', action='store_true', dest="weeks", help='Generate dexcom_weeks.json output file')
-    parser.add_argument('-m', '--months', action='store_true', dest="months", help='Generate dexcom_months.json output file')
-    parser.add_argument('-y', '--years', action='store_true', dest="years", help='Generate dexcom_years.json output file')
-    parser.add_argument('-p', '--pretty', action='store_true', dest="pretty", help='Pretty print JSON')
+    parser = argparse.ArgumentParser(description='Process the input Dexcom JSON file and output one or more time unit-batched JSON files with summary statistics.')
+    parser.add_argument('dex_name', action = 'store', help='name of Dexcom .json file')
+    parser.add_argument('-w', '--weeks', action='store_true', dest="weeks", help='generate dexcom_weeks.json output file')
+    parser.add_argument('-m', '--months', action='store_true', dest="months", help='generate dexcom_months.json output file')
+    parser.add_argument('-y', '--years', action='store_true', dest="years", help='generate dexcom_years.json output file')
+    parser.add_argument('-p', '--pretty', action='store_true', dest="pretty", help='pretty print JSON')
 
     args = parser.parse_args()
 
