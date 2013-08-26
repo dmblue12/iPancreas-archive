@@ -1,4 +1,8 @@
-#### NB: As of June 2013, I've started on a massive reworking of this project from the ground up.
+## About This Branch
+
+This branch contains demo visualizations of various sources of diabetes data, particularly (and only, so far) data exported from my Dexcom continuous glucose monitor. The visualizations are built using the JavaScript data visualization library [D3](http://d3js.org/ 'D3: Data-Driven Documents'), often in combination with [Bootstrap](http://getbootstrap.com/ 'Bootstrap') CSS and JavaScript for UI elements and interaction.
+
+When each visualization is in a reasonably ready state, I push it to a location within `http://janabeck.com/iPancreas/examples/html/...` on my [GitHub Pages](http://pages.github.com/ 'GitHub Pages') site for this project. When each visualization is in a reasonably *finished* state, I add it to my [gallery](http://janabeck.com/iPancreas/examples/html/gallery.html 'D3 Visualizations of Diabetes Data').
 
 Copyright 2013 Jana E. Beck  
 Contact: jana.eliz.beck@gmail.com
