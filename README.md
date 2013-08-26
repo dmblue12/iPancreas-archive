@@ -1,8 +1,10 @@
 ## About This Branch
 
-This branch contains the code for a desktop app packaging together my Python scripts for processing and manipulating data from files exported from the software accompanying various diabetes devices (so far: just Dexcom continuous glucose monitors) along with JavaScript-based visualizations of the resulting JSON data.
+This branch contains the code for compiling a desktop app packaging together my Python scripts for processing and manipulating data from files exported from the software accompanying various diabetes devices (so far: just Dexcom continuous glucose monitors) along with visualizations of the resulting JSON data.
 
-The app is built with [TideSDK](http://www.tidesdk.org/ "TideSDK Homepage").
+The app is built with [TideSDK](http://www.tidesdk.org/ "TideSDK Homepage") on a [Backbone.js](http://backbonejs.org/ 'Backbone.js') framework, with [Bootstrap](http://getbootstrap.com/ 'Bootstrap') CSS and JavaScript for UI elements and interaction and the JavaScript library [D3](http://d3js.org/ 'D3: Data-Driven Documents') for data visualization.
+
+**NB:** At present, the TideSDK-compiled application does *not* live in this repository, although if you know how to compile a TideSDK app, you have most of what is needed to do so on this branch (just copy everything into the Resources folder). What you *don't* have is my default app settings (in `tiapp.xml`) and some of the font and image files that I haven't yet checked to see if they are distributable. I also haven't added the JavaScript sources for the app's dependencies (Backbone, D3, etc.) to this repository, but those are easy to find.
 
 Copyright 2013 Jana E. Beck  
 Contact: jana.eliz.beck@gmail.com
