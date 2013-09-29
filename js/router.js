@@ -135,11 +135,13 @@ define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files
 			});
 
 			app_router.on('route:showSummary', function(unit) {
-				require(['views/summary', 'models/focused-svg'], function(SummaryView, FocusedSVG) {
+				require(['views/summary', 'models/focused-svg', 'models/palette'], function(SummaryView, FocusedSVG, Palette) {
 
 					var f = new FocusedSVG();
+					var p = new Palette();
 					var batch = dexcomBatches.get(unit);
 					f.set('data', batch.get('current'));
+					f.set('palette', _.clone(p.attributes));
 					var summaryView = new SummaryView({id: unit, model: f});
 					summaryView.render();
 					summaryView.loadFirstUnit();
