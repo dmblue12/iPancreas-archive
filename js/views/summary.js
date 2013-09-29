@@ -44,14 +44,24 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'models/focused-svg'],
 
 				f.pad = f.margin_left - f.margin_right;
 
+				// TODO: comment this out in production!
+				// this is just to be able to see the borders of my #inner SVG
+				this.$svg.append("svg:rect")
+					.attr("width", f.width)
+					.attr("height", f.height)
+					.attr("x", f.x)
+					.attr("y", f.y)
+					.attr("id", "show");
+
 				this.$svg.append("svg:svg")
 					.attr("width", f.width)
 					.attr("height", f.height)
 					.attr("x", f.x)
 					.attr("y", f.y)
+					.attr("id", "inner")
 					.append("svg:g")
 					.attr("id", "focus")
-					.attr("transform", "translate(" + this.model.get('margin_left') + "," + this.model.get('margin_top') + ")");
+					.attr("transform", "translate(" + f.margin_left + "," + f.margin_top + ")");
 
 				this.$focus = d3.select('#focus');
 
@@ -144,6 +154,116 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'models/focused-svg'],
 							}
 						}
 					});
+
+				this.$focus.append("svg:g")
+					.attr("class", "y axis")
+					.call(this.yAxis);
+
+				this.$focus.append("svg:text")
+					.attr("class", "y lbl")
+					// "laterally" centers labels (i.e., horizontally, but not really since it's rotated)
+					.attr("text-anchor", "middle")
+					// because of the rotation applied below, y-coord is really x-coord
+					// -pad "undoes" part of the effects of the translate(margin.left, margin.top) to place the axis label at the edge of the margin
+					.attr("y", -f.pad)
+					// because of the rotation applied below x-coord is really y-coord
+					.attr("x", -f.h/2)
+					// makes baseline of text the top of the letters
+					.attr('alignment-baseline', 'hanging')
+					.attr("transform", "rotate(-90)")
+					.text("Blood Glucose in mg/dL");
+
+				// legend
+				var legendW = 160;
+				var legendH = 60;
+				var legendXPos = f.w - legendW - f.margin_right;
+				// def linear gradient for legend: blue
+				blueLinearDef = this.$focus.append("svg:defs")
+					.append("svg:linearGradient")
+					.attr({
+						id: "blueLinear",
+						x1: "0%",
+						y1: "0%",
+						x2: "100%",
+						y2: "0%",
+						spreadMethod: "pad"
+					});
+				blueLinearDef.append("svg:stop")
+					.attr("offset", "0%")
+					.attr("stop-color", f.palette.dark_blue)
+					.attr("stop-opacity", "1");
+				blueLinearDef.append("svg:stop")
+					.attr("offset", "100%")
+					.attr("stop-color", "#000000")
+					.attr("stop-opacity", "1");
+				// def linear gradient for legend: red
+				redLinearDef = this.$focus.append("svg:defs")
+					.append("svg:linearGradient")
+					.attr({
+						id: "redLinear",
+						x1: "0%",
+						y1: "0%",
+						x2: "100%",
+						y2: "0%",
+						spreadMethod: "pad"
+					});
+				redLinearDef.append("svg:stop")
+					.attr("offset", "0%")
+					.attr("stop-color", f.palette.red)
+					.attr("stop-opacity", "1");
+				redLinearDef.append("svg:stop")
+					.attr("offset", "100%")
+					.attr("stop-color", "#000000")
+					.attr("stop-opacity", "1");
+
+				var targetLegend = this.$focus.append("svg:g")
+					.attr({
+						transform: "translate(" + legendXPos + "," + 0 + ")",
+						width: legendW,
+						height: legendH
+					});
+				// add gradient square for target range legend
+				targetLegend.append("svg:rect")
+					.attr("x", 0)
+					.attr("y", 5)
+					.attr("rx", 5)
+					.attr("ry", 5)
+					.attr("width", legendW)
+					// each legend bar is 1/3 of total legend height, final third serves as padding
+					.attr("height", legendH / 3)
+					.attr("stroke", "#DCDCDC")
+					.attr("stroke-width", 3)
+					.style("fill", "url(#blueLinear)");
+				//add legend text: blue
+				targetLegend.append("svg:text")
+					// center text in legend bar
+					.attr("x", legendW / 2)
+					.attr("y", 16)
+					.attr("class", "txt")
+					.attr("text-anchor", "middle")
+					.attr("dominant-baseline", "middle")
+					.attr("fill", "#DCDCDC")
+					.text("In Target Range");
+				// add gradient square for out of target range legend
+				targetLegend.append("svg:rect")
+					.attr("x", 0)
+					.attr("y", legendH / 2 + 5)
+					.attr("rx", 5)
+					.attr("ry", 5)
+					.attr("width", legendW)
+					.attr("height", legendH / 3)
+					.attr("stroke", "#DCDCDC")
+					.attr("stroke-width", 3)
+					.style("fill", "url(#redLinear)");
+				//add legend text: red
+				targetLegend.append("svg:text")
+					.attr("x", legendW / 2)
+					.attr("y", legendH / 2 + 16)
+					.attr("class", "txt")
+					.attr("text-anchor", "middle")
+					.attr("dominant-baseline", "middle")
+					.attr("fill", "#DCDCDC")
+					.text("Out of Target Range");
 			}
 
 		});

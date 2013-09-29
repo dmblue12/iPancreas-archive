@@ -5,11 +5,11 @@ define(['underscore', 'backbone'],
 				width: 860,
 				height: 530,
 				x: 0,
-				y: 110,
+				y: 90,
 				margin_top: 20,
-				margin_right: 10,
+				margin_right: 20,
 				margin_bottom: 20,
-				margin_left: 70
+				margin_left: 80
 			}
 		});
 

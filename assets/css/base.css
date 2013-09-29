@@ -35,6 +35,29 @@ svg {
 	margin: 0 auto;
 }
 
+/* TODO: comment out in production; just to view borders of #inner SVG */
+#show {
+	fill: black;
+	opacity: 0.1;
+}
+
+.axis path, .axis line {
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+
+.axis text, .txt {
+	font-family: sans-serif;
+	font-size: 12px;
+}
+
+.lbl {
+	font-family: sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+}
+
 .bar:hover {
 	opacity: 0.5;
 	stroke: gold;
