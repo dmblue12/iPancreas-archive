@@ -75,6 +75,16 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'models/focused-svg'],
 					.domain([0, d3.max(dataset, function(d) { return d.y; })])
 					.range([0, f.w]);
 
+				var redScale = d3.scale.linear()
+					.domain([0, d3.max(dataset, function(d) { return d.y; })])
+					.range(['#000000', '#BD362F'])
+					.interpolate(d3.interpolateHcl);
+
+				var blueScale = d3.scale.linear()
+					.domain([0, d3.max(dataset, function(d) { return d.y; })])
+					.range(['#000000', '#0044CC'])
+					.interpolate(d3.interpolateHcl);
+
 				startDate = new Date(current['Start Date']);
 				var startYear = startDate.getFullYear();
 				var startMonth = startDate.getMonth();
@@ -125,13 +135,13 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'models/focused-svg'],
 						fill: function(d) {
 							// scale(value) / w gives a number between 0.0 and 1.0 to determine "percentage" of non-black color in each bar
 							if (d.x < 80) {
-								return "rgb(" + Math.round((xScale(d.y) / f.w) * 255) + ", 0, 0)";
+								return redScale(d.y);
 							}
 							else if ((d.x >= 80) && (d.x < 140)) {
-								return "rgb(0, 0, " + Math.round((xScale(d.y) / f.w) * 255) + ")";
+								return blueScale(d.y);
 							}
 							else if (d.x >= 140) {
-								return "rgb(" + Math.round((xScale(d.y) / f.w) * 255) + ", 0, 0)";
+								return redScale(d.y);
 							}
 						}
 					})
