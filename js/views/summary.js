@@ -109,8 +109,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'models/focused-svg'],
 						// these provide the rounded corners of the histogram bars
 						rx: 5,
 						ry: 5,
-						"class": "bar",
-						"data-toggle": "popover"
+						"class": "bar"
 					})
 					// attributes that do need updated
 					.attr({
@@ -144,16 +143,6 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'models/focused-svg'],
 								return redScale(d.y);
 							}
 						}
-					})
-					// data attributes for popovers
-					.attr("title", function(d) {
-						return "Between " + d.x + " and " + parseInt(d.x + 20) + " mg/dL";
-					})
-					.attr("data-content", function(d) {
-						if (d.y === 1) {
-							return d.y + " reading";
-						}
-						return d.y + " readings";
 					});
 			}
 
