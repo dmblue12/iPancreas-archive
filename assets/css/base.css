@@ -91,8 +91,23 @@ svg {
 	src: url('../fonts/chunkfive.svg#ChunkFive-Roman') format('svg');
 }
 
+.menu-text {
+	stroke-width: 0;
+}
+
 .glow .menu-text {
 	text-shadow: 0 0 5px #FFFFFF;
+}
+
+.non-leaf {
+	stroke: #DCDCDC;
+	stroke-width: 3;
+}
+
+.clickable:hover {
+	cursor: pointer;
+	stroke: gold;
+	stroke-width: 3;
 }
 
 #dexcom-offset {

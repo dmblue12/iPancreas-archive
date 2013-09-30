@@ -1,0 +1,22 @@
+<form id="settings" class="form-horizontal to-clear">
+	<fieldset>
+		<legend>User Settings</legend>
+		<div class="control-group" id="dexcom-format">
+			<span class="help-inline control-label">Data format:</span>
+			<div class="controls">
+				<label for="csv" class="radio inline">
+					<input id="csv" type="radio" name="dexcom_format" value="csv" checked />
+					 CSV
+				</label>
+				<label for="xml" class="radio inline">
+					<input id="xml" type="radio" name="dexcom_format" value="xml" />
+					 XML
+				</label>
+			</div>
+		</div>
+		<div class="form-actions">
+			<button id="submit-button" type="button" class="btn btn-primary disabled">Submit</button>
+			<button type="button" class="btn" href="#menu/menu">Cancel</button>
+		</div>
+	</fieldset>
+</form>

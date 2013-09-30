@@ -1,5 +1,5 @@
-define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node', 'text!json/palette.json'],
-	function($, _, Backbone, d3, MenuNode, palette) {
+define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node'],
+	function($, _, Backbone, d3, MenuNode) {
 		var MenuView = Backbone.View.extend({
 
 			el: '#mainSVG',
@@ -8,32 +8,62 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node', 'text!json/
 
 				this.$el.show();
 
-				var p = JSON.parse(palette);
+				var p = appModel.get('palette');
 
 				var colors = [
-					p["dark_blue"],
-					p["red"],
-					p["orange"],
-					p["green"],
-					p["light_blue"]
+					p.get('dark_blue'),
+					p.get('red'),
+					p.get('yellow'),
+					p.get('green'),
+					p.get('light_blue')
 				];
 
-				dataset = this.model.get('graph');
+				var dataset = this.model.get('graph');
 
-				force = d3.layout.force()
+				var force = d3.layout.force()
 					.nodes(dataset.nodes)
 					.links(dataset.edges)
 					.size([1300, 640])
-					.linkDistance([175])
-					.charge([-600])
+					.linkDistance(function(d) {
+						if (d.source.title === 'iPancreas') {
+							return [200];
+						}
+						else {
+							return [100];
+						}
+					})
+					.charge(function(d) {
+						try {
+							if (d.source.title === 'iPancreas') {
+								return [-600];
+							}
+							else {
+								return [-300];
+							}
+						}
+						catch(TypeError) {
+							return [-600];
+						}
+					})
 					.start();
+
+				force.on('tick', function() {
+					edges.attr('x1', function(d) { return d.source.x; })
+						.attr('y1', function(d) { return d.source.y; })
+						.attr('x2', function(d) { return d.target.x; })
+						.attr('y2', function(d) { return d.target.y; });
+
+					nodes.attr('transform', function(d) {
+						return "translate(" + d.x + "," + d.y + ")";
+					});
+				});
 
 				var edges = this.$svg.selectAll('line')
 					.data(dataset.edges)
 					.enter()
 					.append('line')
-					.style('stroke', '#CCC')
-					.style('stroke-width', '1');
+					.style('stroke', p.get('light_gray'))
+					.style('stroke-width', '3');
 
 				var nodes = this.$svg.selectAll('.node')
 					.data(dataset.nodes)
@@ -53,7 +83,14 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node', 'text!json/
 				});
 
 				nodes.append('circle')
-					.attr('r', circleSize)
+					.attr('r', function(d) {
+						if (d.group.indexOf('non-leaf') !== -1) {
+							return 1.5 * circleSize;
+						}
+						else {
+							return circleSize;
+						}
+					})
 					.style('fill', function(d) {
 						if (d.id < 5) {
 							return colors[d.id];	
@@ -72,23 +109,13 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node', 'text!json/
 						return d.title;
 					})
 					.attr('class', 'menu-text')
-					.attr('fill', textColor)
+					.attr('fill', p.get(textColor))
 					.attr('font-size', fontSize + 'px')
 					.attr('font-family', 'ChunkFive')
 					.attr('text-anchor', textAnchor)
 					.attr('letter-spacing', '.15em')
 					.attr('dominant-baseline', 'middle');
 
-				force.on('tick', function() {
-					edges.attr('x1', function(d) { return d.source.x; })
-						.attr('y1', function(d) { return d.source.y; })
-						.attr('x2', function(d) { return d.target.x; })
-						.attr('y2', function(d) { return d.target.y; });
-
-					nodes.attr('transform', function(d) {
-						return "translate(" + d.x + "," + d.y + ")";
-					});
-				});
 			},
 
 			forceUpdate: function() {

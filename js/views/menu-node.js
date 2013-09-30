@@ -10,9 +10,6 @@ define(['jquery', 'underscore', 'backbone'],
 				// jQuery hasClass() doesn't work for SVG
 				// TODO: factor fixes for this out into another .js script
 				var classes = this.$el.attr('class');
-				if (classes.search('clickable') != -1) {
-					this.$el.css('cursor', 'pointer');
-				}
 			},
 
 			action: function() {
