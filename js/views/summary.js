@@ -1,5 +1,5 @@
-define(['jquery', 'underscore', 'backbone', 'd3', 'models/focused-svg'],
-	function($, _, Backbone, d3, FocusedSVG) {
+define(['jquery', 'underscore', 'backbone', 'd3', 'models/focused-svg', 'text!templates/locate.html'],
+	function($, _, Backbone, d3, FocusedSVG, locateHTML) {
 		var SummaryView = Backbone.View.extend({
 
 			el: '#mainSVG',
@@ -14,12 +14,15 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'models/focused-svg'],
 				switch (unit) {
 					case 'weeks':
 						this.headline = ' by Week';
+						this.unit_of = 'Week of ';
 						break;
 					case 'months':
 						this.headline = ' by Month';
+						this.unit_of = 'Month of ';
 						break;
 					case 'years':
 						this.headline = ' by Year';
+						this.unit_of = 'Year of ';
 						break;
 				}
 
@@ -29,7 +32,24 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'models/focused-svg'],
 
 			render: function() {
 				console.log('Rendered SummaryView.');
-				$('#main').prepend('<h2 class="to-clear">Dexcom Data: Summaries' + this.headline + '</h2>');
+				$('#main').prepend(_.template(locateHTML));
+				$('#summary_head').html('Dexcom Data: Summaries' + this.headline);
+				d = this.model.get('data');
+				// this version of WebKit doesn't seem to be able to parse straight from date strings
+				// hence doing it myself
+				// TODO: all of the below only really applies to week view
+				dateStr = d['Start Date'];
+				startYear = dateStr.substring(0,4);
+				startMonth = dateStr.substring(5,7);
+				startCal = dateStr.substring(8,10)
+				startDate = new Date(startYear, startMonth, startCal);
+				// day of the week
+				var startDay = startDate.getDay();
+				var diff = startDay - 1;
+				if (startDay !== 1) {
+					startDate = new Date(startYear, startMonth, startCal - diff);
+				}
+				$('#unit-of').html(this.unit_of + startDate.toDateString());
 			},
 
 			loadFirstUnit: function() {
@@ -46,12 +66,12 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'models/focused-svg'],
 
 				// TODO: comment this out in production!
 				// this is just to be able to see the borders of my #inner SVG
-				this.$svg.append("svg:rect")
-					.attr("width", f.width)
-					.attr("height", f.height)
-					.attr("x", f.x)
-					.attr("y", f.y)
-					.attr("id", "show");
+				// this.$svg.append("svg:rect")
+				// 	.attr("width", f.width)
+				// 	.attr("height", f.height)
+				// 	.attr("x", f.x)
+				// 	.attr("y", f.y)
+				// 	.attr("id", "show");
 
 				this.$svg.append("svg:svg")
 					.attr("width", f.width)

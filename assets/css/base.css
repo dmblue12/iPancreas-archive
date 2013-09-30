@@ -17,9 +17,31 @@ h1 {
 	margin-top: 0;
 }
 
-h2 {
+#headlines {
 	position: absolute;
-	padding: 15px 25px;
+}
+
+.head {
+	padding: 20px 20px 10px 20px;
+}
+
+/*TODO: factor out colors into palette*/
+.unit-head {
+	margin-top: 30px;
+	margin-bottom: 20px;
+	padding: 7px 0px;
+	border: 3px solid #DCDCDC;
+	border-radius: 5px;
+	text-align: center;
+	background-color: #D9EDF7;
+}
+
+#unit-buttons {
+	padding-top: 25px;
+	padding-bottom: 15px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	text-align: center;
 }
 
 form {
@@ -35,7 +57,7 @@ svg {
 	margin: 0 auto;
 }
 
-/* TODO: comment out in production; just to view borders of #inner SVG */
+/*TODO: comment out in production; just to view borders of #inner SVG*/
 #show {
 	fill: black;
 	opacity: 0.1;
