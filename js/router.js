@@ -59,7 +59,8 @@ define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files
 						loadWindow.setTopMost(true);
 						appView = new AppView({model: appModel}, app_router);
 						dexcomBatches = new DexcomBatches([]);
-							
+						
+						// TODO: mbostock has a way of chaining these .json() calls	
 						d3.json('file://' + dataDir.nativePath() + '/dexcom_weeks.json',
 							function(error, json) {
 								if (error) {
@@ -67,7 +68,7 @@ define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files
 								}
 								var dexcomBatch = new DexcomBatch({id: 'weeks'});
 								dexcomBatch.set('data', json['Weeks']);
-								dexcomBatch.set('current', json['Weeks'][0]);
+								dexcomBatch.set('current', json['Weeks'][appModel.get('batchIndex')]);
 								dexcomBatches.add(dexcomBatch);
 							d3.json('file://' + dataDir.nativePath() + '/dexcom_months.json',
 								function(error, json) {
@@ -76,7 +77,7 @@ define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files
 									}
 									var dexcomBatch = new DexcomBatch({id: 'months'});
 									dexcomBatch.set('data', json['Months']);
-									dexcomBatch.set('current', json['Months'][0]);
+									dexcomBatch.set('current', json['Months'][appModel.get('batchIndex')]);
 									dexcomBatches.add(dexcomBatch);
 								d3.json('file://' + dataDir.nativePath() + '/dexcom_years.json',
 									function(error, json) {
@@ -85,7 +86,7 @@ define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files
 										}
 										var dexcomBatch = new DexcomBatch({id: 'years'});
 										dexcomBatch.set('data', json['Years']);
-										dexcomBatch.set('current', json['Years'][0]);
+										dexcomBatch.set('current', json['Years'][appModel.get('batchIndex')]);
 										dexcomBatches.add(dexcomBatch);
 										loadWindow.close();
 										setTimeout(function() {

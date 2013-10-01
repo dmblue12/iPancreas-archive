@@ -24,6 +24,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'views/menu-node'],
 					.nodes(dataset.nodes)
 					.links(dataset.edges)
 					.size([1300, 640])
+					.friction([0.85])
 					.linkDistance(function(d) {
 						if (d.source.title === 'iPancreas') {
 							return [200];

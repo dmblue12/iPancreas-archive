@@ -10,6 +10,11 @@ define([
 
 			el: '#app',
 
+			events: {
+				'click #previous-unit': 'retreatUnit',
+				'click #next-unit': 'advanceUnit'
+			},
+
 			initialize: function() {
 
 				this.$main = this.$('#main');
@@ -29,6 +34,8 @@ define([
 				this.listenTo(this.model, 'change:navigated', this.save_fragment);
 
 				this.listenTo(this.model, 'change:clear', this.clear);
+
+				this.listenTo(this.model, 'change:batchIndex', this.updateButton);
 			},
 
 			render: function() {
@@ -59,6 +66,52 @@ define([
 					this.$main.empty();	
 				}
 				this.model.set('clear', false);
+			},
+
+			advanceUnit: function() {
+				console.log('Triggered advanceUnit!');
+
+				if (!$('#next-unit').hasClass('disabled')) {
+					this.model.set('batchIndex', this.model.get('batchIndex') + 1);
+
+					var batch = dexcomBatches.get(Backbone.history.fragment.replace('summary/', ''));
+
+					var data = batch.get('data');
+
+					batch.set('current', data[this.model.get('batchIndex')]);
+				}
+			},
+
+			retreatUnit: function() {
+				console.log('Triggered retreatUnit!');
+
+				if (!$('#previous-unit').hasClass('disabled')) {				
+					this.model.set('batchIndex', this.model.get('batchIndex') - 1);
+
+					var batch = dexcomBatches.get(Backbone.history.fragment.replace('summary/', ''));
+
+					var data = batch.get('data');
+
+					batch.set('current', data[this.model.get('batchIndex')]);
+				}
+			},
+
+			updateButton: function() {
+				var i = this.model.get('batchIndex');
+
+				var batch = dexcomBatches.get(Backbone.history.fragment.replace('summary/', ''));
+
+				var len = batch.get('data').length - 1;
+
+				if ((i > 0) && (i < len)) {
+					$('#unit-buttons button').removeClass('disabled');
+				}
+				else if (i === 0) {
+					$('#previous-unit').addClass('disabled');
+				}
+				else if (i == len) {
+					$('#next-unit').addClass('disabled');
+				}
 			}
 
 		});

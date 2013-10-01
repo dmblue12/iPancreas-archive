@@ -4,7 +4,8 @@ define(['underscore', 'backbone', 'models/palette'],
 			defaults: {
 				started: false,
 				forward: [],
-				palette: new Palette()
+				palette: new Palette(),
+				batchIndex: 0
 			},
 
 			start: function() {	
