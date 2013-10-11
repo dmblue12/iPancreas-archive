@@ -1,0 +1,172 @@
+action,value,category,time,tags
+carbs,62.00,Xxxxxxxxxxx,"Sept. 30, 2013, 11:18 p.m.",nutrition_facts
+meal_bolus,4.75,,"Sept. 30, 2013, 11:09 p.m.",
+correction_bolus,0.75,,"Sept. 30, 2013, 10:34 p.m.",WTF
+carbs,24.00,xxxxxxxxx_xxxxxxx,"Sept. 30, 2013, 5:51 p.m.",nutrition_facts
+meal_bolus,1.85,,"Sept. 30, 2013, 5:51 p.m.",
+carbs,41.00,xxxxxx_xxxx_xxxxxx_xxxxx,"Sept. 30, 2013, 5:03 p.m.",nutrition_facts
+meal_bolus,3.15,,"Sept. 30, 2013, 5:03 p.m.",
+carbs,51.00,Xxxxxxxx_xxxx_xxxx,"Sept. 30, 2013, 1:31 p.m.",nutrition_facts
+meal_bolus,4.00,,"Sept. 30, 2013, 1:30 p.m.",
+coffee,1.50,cafe_solo,"Sept. 30, 2013, 11:43 a.m.",
+carbs,5.00,Xxxxx_xxxxxx,"Sept. 30, 2013, 11:06 a.m.",nutrition_facts
+meal_bolus,0.90,,"Sept. 30, 2013, 11:03 a.m.",coffee
+correction_bolus,0.60,,"Sept. 30, 2013, 9:41 a.m.",WTF
+carbs,51.00,Xxxxxxxx_xxxx_xxxx,"Sept. 30, 2013, 1:49 a.m.",nutrition_facts
+meal_bolus,3.90,,"Sept. 30, 2013, 1:49 a.m.",
+carbs,30.00,xxxxxxx_xxxx_xxxx_xxxx,"Sept. 30, 2013, 1:36 a.m.",nutrition_facts
+meal_bolus,2.30,,"Sept. 30, 2013, 1:30 a.m.",
+done_run,,,"Sept. 29, 2013, 11:17 p.m.",
+ran,2.50,slow,"Sept. 29, 2013, 10:41 p.m.",
+coffee,1.50,cafe_solo,"Sept. 29, 2013, 2:58 p.m.",
+ate,,xxxxxxxxx_xxxx_xxx_xxxxx,"Sept. 29, 2013, 2:24 p.m.",
+correction_bolus,0.75,,"Sept. 29, 2013, 4:35 a.m.",my_bad
+carbs,51.00,Xxxxxxxx_xxxx_xxxx,"Sept. 29, 2013, 1:40 a.m.",nutrition_facts
+meal_bolus,3.00,,"Sept. 29, 2013, 1:38 a.m.",
+hypo,60.00,,"Sept. 29, 2013, 12:45 a.m.",mild glucose_tabs
+carbs,60.00,xxxxxxxxx_xxxx_xxxxxxx,"Sept. 28, 2013, 11:41 p.m.",no_clue
+meal_bolus,4.60,,"Sept. 28, 2013, 11:13 p.m.",
+carbs,30.00,xxxxxxx_xxxx_xxxx_xxxx,"Sept. 28, 2013, 10:21 p.m.",nutrition_facts
+meal_bolus,2.45,,"Sept. 28, 2013, 10:17 p.m.",
+hypo,61.00,,"Sept. 28, 2013, 9:17 p.m.",mild glucose_tabs
+done_run,,,"Sept. 28, 2013, 8:26 p.m.",
+ran,5.00,slow,"Sept. 28, 2013, 7:17 p.m.",
+correction_bolus,0.90,,"Sept. 28, 2013, 6:58 p.m.",my_bad
+coffee,1.50,cafe_solo,"Sept. 28, 2013, 1:35 p.m.",
+carbs,90.00,xxxxx_xxxxx_xxxxxx,"Sept. 28, 2013, 1:34 p.m.",no_clue take_out
+meal_bolus,7.40,,"Sept. 28, 2013, 1:23 p.m.",coffee
+correction_bolus,0.30,,"Sept. 28, 2013, 12:03 a.m.",my_bad
+carbs,25.00,xxxxx_xxx_xxxxx,"Sept. 27, 2013, 6:45 p.m.",no_clue eating_out
+meal_bolus,1.90,,"Sept. 27, 2013, 6:44 p.m.",
+done_run,,,"Sept. 27, 2013, 4:29 p.m.",
+ran,3.00,slow,"Sept. 27, 2013, 3:48 p.m.",
+coffee,1.50,cafe_solo,"Sept. 27, 2013, 1:31 p.m.",
+carbs,51.00,Xxxxxxxx_xxxx_xxxx,"Sept. 27, 2013, 1:07 p.m.",nutrition_facts
+meal_bolus,4.40,,"Sept. 27, 2013, 1:05 p.m.",coffee
+carbs,10.00,xxxxxxx_xxxx_xxx_xxxxxxxx,"Sept. 26, 2013, 5:57 p.m.",no_clue eating_out
+meal_bolus,0.75,,"Sept. 26, 2013, 5:57 p.m.",
+correction_bolus,1.45,,"Sept. 26, 2013, 5:57 p.m.",my_bad
+coffee,1.50,cafe_solo,"Sept. 26, 2013, 2:41 p.m.",
+carbs,75.00,Xxxxxxxx_xxxxx,"Sept. 26, 2013, 2:33 p.m.",no_clue take_out
+meal_bolus,6.25,,"Sept. 26, 2013, 2:08 p.m.",dual_wave 60percent 60min coffee
+correction_bolus,1.50,,"Sept. 26, 2013, 1:49 a.m.",my_bad
+carbs,65.00,Xxxxxxxx_xxxxx,"Sept. 25, 2013, 10:15 p.m.",no_clue take_out
+meal_bolus,5.00,,"Sept. 25, 2013, 10:15 p.m.",dual_wave 60min 60percent
+carbs,5.00,xxxxxxx_xxxxx,"Sept. 25, 2013, 8:13 p.m.",guesstimating
+meal_bolus,0.20,,"Sept. 25, 2013, 8:13 p.m.",
+coffee,1.50,cafe_solo,"Sept. 25, 2013, 2:20 p.m.",
+ate,,xxxxxxxxx_xxxx_xxx_xxxxx,"Sept. 25, 2013, 1:44 p.m.",
+done_run,,,"Sept. 25, 2013, 11:58 a.m.",
+ran,3.00,slow,"Sept. 25, 2013, 11:19 a.m.",
+correction_bolus,1.55,,"Sept. 24, 2013, 10:26 p.m.",WTF
+carbs,68.00,xxxx_xxxxx_xxx,"Sept. 24, 2013, 5:10 p.m.",nutrition_facts eating_out
+meal_bolus,5.25,,"Sept. 24, 2013, 5:09 p.m.",
+correction_bolus,0.65,,"Sept. 24, 2013, 5:09 p.m.",WTF
+coffee,1.50,cafe_solo,"Sept. 24, 2013, 1:50 p.m.",
+carbs,5.00,Xxxxx_xxxxxx,"Sept. 24, 2013, 1:36 p.m.",nutrition_facts
+meal_bolus,0.90,,"Sept. 24, 2013, 1:26 p.m.",
+correction_bolus,0.85,,"Sept. 24, 2013, 1:26 p.m.",my_bad
+done_run,,,"Sept. 24, 2013, 11:37 a.m.",
+ran,3.00,sub1015,"Sept. 24, 2013, 10:58 a.m.",
+correction_bolus,0.50,,"Sept. 24, 2013, 10:34 a.m.",WTF
+carbs,27.00,xxx_xxxxx_xxx,"Sept. 23, 2013, 10:50 p.m.",nutrition_facts
+meal_bolus,2.05,,"Sept. 23, 2013, 10:48 p.m.",
+correction_bolus,1.00,,"Sept. 23, 2013, 10:48 p.m.",WTF
+ate,,xxxxxxxxx,"Sept. 23, 2013, 8:30 p.m.",
+carbs,28.00,xxxxxxx_xxxxxx_xxxx,"Sept. 23, 2013, 6:44 p.m.",nutrition_facts
+meal_bolus,2.15,,"Sept. 23, 2013, 6:43 p.m.",
+coffee,1.50,cafe_solo,"Sept. 23, 2013, 1:13 p.m.",
+carbs,5.00,Xxxxx_xxxxxx,"Sept. 23, 2013, 12:56 p.m.",nutrition_facts
+meal_bolus,0.90,,"Sept. 23, 2013, 12:47 p.m.",coffee
+correction_bolus,0.60,,"Sept. 23, 2013, 12:47 p.m.",my_bad
+carbs,84.00,XxxxxxXxxx_xxxxxxxxx,"Sept. 23, 2013, 12:54 a.m.",nutrition_facts
+meal_bolus,6.75,,"Sept. 23, 2013, 12:53 a.m.",dual_wave 50percent 90min
+ate,,xxxxxxxxx,"Sept. 22, 2013, 10:57 p.m.",
+done_run,,,"Sept. 22, 2013, 9:36 p.m.",
+ran,3.50,slow,"Sept. 22, 2013, 8:44 p.m.",
+carbs,50.00,Xxxxxxx_xxxx,"Sept. 22, 2013, 2:24 p.m.",no_clue eating_out
+meal_bolus,3.80,,"Sept. 22, 2013, 2:23 p.m.",
+correction_bolus,0.40,,"Sept. 22, 2013, 2:23 p.m.",my_bad
+carbs,75.00,xxxxx_xxx_xxxxx_xxxxxx,"Sept. 22, 2013, 10:32 a.m.",no_clue eating_out
+meal_bolus,5.75,,"Sept. 22, 2013, 10:31 a.m.",
+coffee,1.50,cafe_solo,"Sept. 22, 2013, 10:13 a.m.",
+hypo,47.00,,"Sept. 22, 2013, 10:02 a.m.",severe soda
+carbs,5.00,Xxxxx_xxxxxx,"Sept. 22, 2013, 8:35 a.m.",nutrition_facts
+meal_bolus,0.90,,"Sept. 22, 2013, 8:27 a.m.",coffee
+correction_bolus,0.80,,"Sept. 22, 2013, 7:30 a.m.",WTF
+meal_bolus,3.45,,"Sept. 21, 2013, 11:34 p.m.",
+carbs,45.00,xxxxxxxx_xxxxxxx,"Sept. 21, 2013, 11:21 p.m.",guesstimating
+hypo,63.00,,"Sept. 21, 2013, 10:41 p.m.",mild juice
+carbs,5.00,xxxx_xxxxx,"Sept. 21, 2013, 6:32 p.m.",no_clue
+correction_bolus,1.65,,"Sept. 21, 2013, 5:57 p.m.",my_bad
+carbs,19.00,xxxxx,"Sept. 21, 2013, 3:16 p.m.",nutrition_facts
+meal_bolus,1.45,,"Sept. 21, 2013, 3:15 p.m.",
+carbs,50.00,xxxxxxx_xxxx,"Sept. 21, 2013, 1:24 p.m.",no_clue eating_out
+meal_bolus,3.85,,"Sept. 21, 2013, 1:15 p.m.",
+correction_bolus,0.85,,"Sept. 21, 2013, 1:15 p.m.",my_bad
+correction_bolus,0.10,,"Sept. 21, 2013, 12:05 p.m.",my_bad
+meal_bolus,4.60,,"Sept. 21, 2013, 10:24 a.m.",forgot
+coffee,1.00,gold_filter,"Sept. 21, 2013, 9:39 a.m.",
+carbs,60.00,xxxxx_xxx_xxxxx_xxxxxx,"Sept. 21, 2013, 9:24 a.m.",no_clue eating_out
+hypo,63.00,,"Sept. 21, 2013, 9:19 a.m.",mild glucose_tabs
+carbs,27.00,xxx_xxxxx_xxx,"Sept. 21, 2013, 12:56 a.m.",nutrition_facts
+meal_bolus,1.05,,"Sept. 21, 2013, 12:56 a.m.",
+carbs,40.00,xxxxxxxx_xxxxxxx,"Sept. 20, 2013, 10:53 p.m.",guesstimating
+meal_bolus,2.75,,"Sept. 20, 2013, 10:53 p.m.",
+ate,,xxxxxxx_xxxxx,"Sept. 20, 2013, 10:37 p.m.",
+hypo,60.00,,"Sept. 20, 2013, 10:26 p.m.",mild juice
+carbs,30.00,xxxxxxxxxx_xxxxxxxx_xxxxxxxx,"Sept. 20, 2013, 7:38 p.m.",no_clue eating_out
+meal_bolus,2.35,,"Sept. 20, 2013, 7:38 p.m.",
+hypo,65.00,,"Sept. 20, 2013, 6:10 p.m.",mild juice
+done_run,,,"Sept. 20, 2013, 5:25 p.m.",
+ran,3.00,slow,"Sept. 20, 2013, 4:47 p.m.",
+coffee,1.50,cafe_solo,"Sept. 20, 2013, 3:05 p.m.",
+carbs,5.00,Xxxxx_xxxxxx,"Sept. 20, 2013, 2:43 p.m.",nutrition_facts
+meal_bolus,0.70,,"Sept. 20, 2013, 2:43 p.m.",coffee
+carbs,27.00,xxx_xxxxx_xxx,"Sept. 20, 2013, 5:09 a.m.",nutrition_facts
+meal_bolus,1.90,,"Sept. 20, 2013, 5:05 a.m.",
+ate,,xxxxxxxxx,"Sept. 19, 2013, 11:23 p.m.",
+hypo,61.00,,"Sept. 19, 2013, 11:17 p.m.",juice
+ate,,xxxxxxxxx_xxxx_xxx_xxxxx,"Sept. 19, 2013, 3:57 p.m.",
+done_run,,,"Sept. 19, 2013, 2:34 p.m.",
+ran,4.00,slow,"Sept. 19, 2013, 1:41 p.m.",
+coffee,1.50,cafe_solo,"Sept. 19, 2013, 12:15 p.m.",
+carbs,5.00,Xxxxx_xxxxxx,"Sept. 19, 2013, 12:05 p.m.",nutrition_facts
+meal_bolus,1.20,,"Sept. 19, 2013, 11:56 a.m.",coffee
+hypo,63.00,,"Sept. 19, 2013, 10:56 a.m.",mild juice
+carbs,30.00,xxxxxxxxx,"Sept. 18, 2013, 10:27 p.m.",no_clue
+meal_bolus,2.30,,"Sept. 18, 2013, 10:27 p.m.",
+ate,,xxxxxxx_xxxxx,"Sept. 18, 2013, 9:35 p.m.",
+correction_bolus,0.85,,"Sept. 18, 2013, 9:35 p.m.",my_bad beer
+ate,,xxxxxxxxx_xxxx_xxx_xxxxx,"Sept. 18, 2013, 3:43 p.m.",
+coffee,1.50,cafe_solo,"Sept. 18, 2013, 10:27 a.m.",
+carbs,5.00,Xxxxx_xxxxxx,"Sept. 18, 2013, 10:21 a.m.",nutrition_facts
+meal_bolus,1.15,,"Sept. 18, 2013, 10:19 a.m.",coffee
+carbs,15.00,xxxxxxxxx,"Sept. 18, 2013, 12:56 a.m.",no_clue
+meal_bolus,1.40,,"Sept. 18, 2013, 12:52 a.m.",
+carbs,10.00,xxxxxxx_xxxxx,"Sept. 17, 2013, 8:53 p.m.",guesstimating
+carbs,41.00,xxxxxxx_xxxxxxx,"Sept. 17, 2013, 8:39 p.m.",nutrition_facts
+meal_bolus,3.90,,"Sept. 17, 2013, 8:39 p.m.",
+correction_bolus,0.70,,"Sept. 17, 2013, 6:53 p.m.",WTF
+carbs,24.00,xxxxxxxxx_xxxxxxx,"Sept. 17, 2013, 4:58 p.m.",nutrition_facts
+meal_bolus,1.85,,"Sept. 17, 2013, 4:38 p.m.",
+carbs,28.00,xxxxxxx_xxxxxx_xxxx,"Sept. 17, 2013, 2:59 p.m.",nutrition_facts
+meal_bolus,2.25,,"Sept. 17, 2013, 2:59 p.m.",
+coffee,1.50,cafe_solo,"Sept. 17, 2013, 12:12 p.m.",
+carbs,5.00,Xxxxx_xxxxxx,"Sept. 17, 2013, noon",nutrition_facts
+meal_bolus,0.90,,"Sept. 17, 2013, noon",coffee
+done_run,,,"Sept. 17, 2013, 10:18 a.m.",
+ran,2.50,slow,"Sept. 17, 2013, 9:44 a.m.",
+hypo,54.00,,"Sept. 17, 2013, 8:53 a.m.",severe juice
+carbs,46.00,xxxxxxx_xxxxxxx_xxx_xxxxx_xxxxx,"Sept. 16, 2013, 9:54 p.m.",nutrition_facts
+meal_bolus,3.30,,"Sept. 16, 2013, 9:53 p.m.",
+carbs,10.00,xxxxxxx_xxxxx,"Sept. 16, 2013, 2:42 p.m.",guesstimating
+meal_bolus,0.75,,"Sept. 16, 2013, 2:42 p.m.",
+correction_bolus,0.15,,"Sept. 16, 2013, 1:47 p.m.",WTF
+coffee,1.00,gold_filter,"Sept. 16, 2013, 11:58 a.m.",
+carbs,5.00,Xxxxx_xxxxxx,"Sept. 16, 2013, 11:47 a.m.",nutrition_facts
+meal_bolus,1.25,,"Sept. 16, 2013, 11:46 a.m.",coffee
+ibuprofen,400.00,,"Sept. 16, 2013, 11:42 a.m.",backache
+done_run,,,"Sept. 16, 2013, 10:38 a.m.",
+ran,4.00,sub10,"Sept. 16, 2013, 9:27 a.m.",
+hypo,58.00,,"Sept. 16, 2013, 8:33 a.m.",mild juice
