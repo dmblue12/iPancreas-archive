@@ -1,5 +1,5 @@
-define(['jquery', 'underscore', 'backbone', 'd3', 'models/focused-svg', 'text!templates/locate.html'],
-	function($, _, Backbone, d3, FocusedSVG, locateHTML) {
+define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/locate.html'],
+	function($, _, Backbone, d3, locateHTML) {
 		var SummaryView = Backbone.View.extend({
 
 			el: '#mainSVG',
