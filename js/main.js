@@ -33,6 +33,16 @@ var appModel;
 
 var dexcomBatches;
 
+var parseDate = function(str) {
+	year = str.substring(0,4);
+	month = str.substring(5,7) - 1;
+	day = str.substring(8,10);
+	hour = str.substring(11,13);
+	minute = str.substring(14, 16);
+	second = str.substring(17,19);
+	return new Date(year, month, day, hour, minute, second);
+};
+
 // TideSDK variables
 var w = Ti.UI.currentWindow;
 

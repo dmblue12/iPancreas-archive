@@ -78,6 +78,12 @@ define([
 
 					var data = batch.get('data');
 
+					batch.set('previous', data[this.model.get('batchIndex') - 1]);
+
+					if (this.model.get('batchIndex') + 1 < data.length) {
+						batch.set('next', data[this.model.get('batchIndex') + 1]);
+					}
+
 					batch.set('current', data[this.model.get('batchIndex')]);
 				}
 			},
@@ -91,6 +97,12 @@ define([
 					var batch = dexcomBatches.get(Backbone.history.fragment.replace('summary/', ''));
 
 					var data = batch.get('data');
+
+					batch.set('next', data[this.model.get('batchIndex') + 1]);
+
+					if (this.model.get('batchIndex') - 1 > 0) {
+						batch.set('previous', data[this.model.get('batchIndex') - 1]);
+					}
 
 					batch.set('current', data[this.model.get('batchIndex')]);
 				}

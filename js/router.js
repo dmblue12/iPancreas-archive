@@ -69,6 +69,7 @@ define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files
 								var dexcomBatch = new DexcomBatch({id: 'weeks'});
 								dexcomBatch.set('data', json['Weeks']);
 								dexcomBatch.set('current', json['Weeks'][appModel.get('batchIndex')]);
+								dexcomBatch.set('next', json['Weeks'][appModel.get('batchIndex') + 1]);
 								dexcomBatches.add(dexcomBatch);
 							d3.json('file://' + dataDir.nativePath() + '/dexcom_months.json',
 								function(error, json) {
@@ -78,6 +79,7 @@ define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files
 									var dexcomBatch = new DexcomBatch({id: 'months'});
 									dexcomBatch.set('data', json['Months']);
 									dexcomBatch.set('current', json['Months'][appModel.get('batchIndex')]);
+									dexcomBatch.set('next', json['Months'][appModel.get('batchIndex') + 1]);
 									dexcomBatches.add(dexcomBatch);
 								d3.json('file://' + dataDir.nativePath() + '/dexcom_years.json',
 									function(error, json) {
@@ -87,6 +89,7 @@ define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files
 										var dexcomBatch = new DexcomBatch({id: 'years'});
 										dexcomBatch.set('data', json['Years']);
 										dexcomBatch.set('current', json['Years'][appModel.get('batchIndex')]);
+										dexcomBatch.set('next', json['Years'][appModel.get('batchIndex') + 1]);
 										dexcomBatches.add(dexcomBatch);
 										loadWindow.close();
 										setTimeout(function() {
@@ -136,16 +139,81 @@ define(['jquery', 'underscore', 'backbone', 'models/app', 'collections/dex-files
 			});
 
 			app_router.on('route:showSummary', function(unit) {
-				require(['views/summary', 'models/summary', 'models/palette'], function(SummaryView, Summary, Palette) {
+				require([
+					'views/main-summary',
+					'views/day-summary',
+					'views/hour-summary',
+					'views/stats-summary',
+					'models/summary',
+					'models/palette'
+					], function(MainSummaryView, DayView, HourView, StatsView, Summary, Palette) {
 
-					var f = new Summary();
+					var s = new Summary({id: "main"});
 					var p = new Palette();
 					var batch = dexcomBatches.get(unit);
-					f.set('data', batch.get('current'));
-					f.set('palette', _.clone(p.attributes));
-					var summaryView = new SummaryView({id: unit, model: f});
-					summaryView.render();
-					summaryView.loadFirstUnit();
+
+					s.set('data', batch.get('current'));
+					s.set('next-data', batch.get('next'));
+					s.set('palette', _.clone(p.attributes));
+
+					var mainSummaryView = new MainSummaryView({id: unit, model: s});
+					mainSummaryView.render();
+					mainSummaryView.loadFirstUnit();
+
+					var sm1 = new Summary({
+						id: "sm1",
+						width: 200,
+						height: 200,
+						x: s.get('width') + s.get('gutter'),
+						margin_top: 0,
+						margin_right: 0,
+						margin_bottom: 20,
+						margin_left: 30
+					});
+
+					sm1.set('data', batch.get('current'));
+					sm1.set('next-data', batch.get('next'));
+					sm1.set('palette', _.clone(p.attributes));
+
+					var dayView = new DayView({id: unit, model: sm1});
+					dayView.loadFirstUnit();
+
+					var sm2 = new Summary({
+						id: "sm2",
+						width: 200,
+						height: 200,
+						x: s.get('width') + s.get('gutter') + sm1.get('width') + sm1.get('gutter'),
+						margin_top: 0,
+						margin_right: 0,
+						margin_bottom: 20,
+						margin_left: 30
+					});
+
+					sm2.set('data', batch.get('current'));
+					sm2.set('next-data', batch.get('next'));
+					sm2.set('palette', _.clone(p.attributes));
+
+					var hourView = new HourView({id: unit, model: sm2});
+					hourView.loadFirstUnit();
+
+					var stats = new Summary({
+						id: "stats",
+						width: 420,
+						height: 310,
+						x: s.get('width') + s.get('gutter'),
+						y: s.get('y') + sm1.get('height') + sm1.get('gutter'),
+						margin_top: 20,
+						margin_right: 20,
+						margin_bottom: 20,
+						margin_left: 20
+					});
+
+					stats.set('data', batch.get('current'));
+					stats.set('next-data', batch.get('next'));
+					stats.set('palette', _.clone(p.attributes));
+
+					var statsView = new StatsView({id: unit, model: stats});
+					statsView.loadFirstUnit();
 
 					forwardHistory();
 				});

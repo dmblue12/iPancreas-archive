@@ -1,6 +1,6 @@
 define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/locate.html'],
 	function($, _, Backbone, d3, locateHTML) {
-		var SummaryView = Backbone.View.extend({
+		var MainSummaryView = Backbone.View.extend({
 
 			el: '#mainSVG',
 
@@ -20,7 +20,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/locate.html'],
 			},
 
 			initialize: function() {
-				console.log('Initialized SummaryView.');
+				console.log('Initialized MainSummaryView.');
 
 				this.$svg = d3.select(this.el);
 
@@ -56,7 +56,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/locate.html'],
 			},
 
 			render: function() {
-				console.log('Rendered SummaryView.');
+				console.log('Rendered MainSummaryView.');
 				$('#main').prepend(_.template(locateHTML));
 				$('#summary_head').html('Dexcom Data: Summaries' + this.headline);
 				$('#previous-unit').html(this.previous);
@@ -64,7 +64,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/locate.html'],
 			},
 
 			updateF: function() {
-				console.log('Triggered updateF.');
+				console.log('Triggered updateF (main).');
 
 				f = _.clone(this.model.attributes);
 
@@ -74,7 +74,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/locate.html'],
 
 				f.pad = f.margin_left - f.margin_right;
 
-				d = this.model.get('data');
+				var d = this.model.get('data');
 				// this version of WebKit doesn't seem to be able to parse straight from date strings
 				// hence doing it myself
 				// TODO: also maybe move date parsing to some kind of utility module?				
@@ -88,7 +88,6 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/locate.html'],
 						// day of the week
 						var startDay = startDate.getDay();
 						var diff = startDay - 1;
-						// TODO: WRONG
 						if (startDay !== 1) {
 							startDate = new Date(startYear, startMonth, startCal - diff);
 						}
@@ -106,16 +105,16 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/locate.html'],
 
 				this.updateF();
 
-				console.log(this.model.toJSON());
+				// console.log(this.model.toJSON());
 
 				// TODO: comment this out in production!
-				// this is just to be able to see the borders of my #inner SVG
+				// this is just to be able to see the borders of my SVG
 				// this.$svg.append("svg:rect")
 				// 	.attr("width", f.width)
 				// 	.attr("height", f.height)
 				// 	.attr("x", f.x)
 				// 	.attr("y", f.y)
-				// 	.attr("id", "show");
+				// 	.attr("class", "show");
 
 				this.$svg.append("svg:svg")
 					.attr("width", f.width)
@@ -130,6 +129,10 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/locate.html'],
 				this.$focus = d3.select('#focus');
 
 				var current = this.model.get('data');
+
+				var previous = this.model.get('previous-data');
+
+				var next = this.model.get('next-data');
 
 				yScale = d3.scale.linear()
 					// domain is 20 to 420 so that Lo and Hi values changed to 39 and 401 will be included, potentially
@@ -159,18 +162,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/locate.html'],
 					.range(['#000000', '#0044CC'])
 					.interpolate(d3.interpolateHcl);
 
-				startDate = new Date(current['Start Date']);
-				var startYear = startDate.getFullYear();
-				var startMonth = startDate.getMonth();
-				var startCal = startDate.getDate();
-				var startDay = startDate.getDay();
-				var diff = startDay - 1;
-				if (startDay !== 1) {
-					startDate = new Date(startYear, startMonth, startCal - diff);
-				}
-				$('#week-of').html("Week of " + startDate.toDateString());
-
-				this.yAxis = d3.svg.axis()
+				yAxis = d3.svg.axis()
 					.scale(yScale)
 					.orient("left");
 
@@ -221,7 +213,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/locate.html'],
 
 				this.$focus.append("svg:g")
 					.attr("class", "y axis")
-					.call(this.yAxis);
+					.call(yAxis);
 
 				this.$focus.append("svg:text")
 					.attr("class", "y lbl")
@@ -331,7 +323,7 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/locate.html'],
 			},
 
 			updateUnit: function() {
-				console.log('Triggered updateUnit!');
+				console.log('Triggered updateUnit (main)!');
 
 				// updating model's data
 				this.model.set('data', this.batch.get('current'));
@@ -339,6 +331,10 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/locate.html'],
 				console.log(this.model.toJSON());
 
 				var current = this.model.get('data');
+
+				var previous = this.model.get('previous-data');
+
+				var next = this.model.get('next-data');
 
 				// updating dataset
 				var dataset = d3.layout.histogram()
@@ -399,5 +395,5 @@ define(['jquery', 'underscore', 'backbone', 'd3', 'text!templates/locate.html'],
 
 		});
 
-	return SummaryView;
+	return MainSummaryView;
 });
