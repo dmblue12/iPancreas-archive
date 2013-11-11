@@ -1,0 +1,9 @@
+.DS_Store
+*.json
+*.mindnode
+*.pxm
+*.pyc
+assets/
+d3-branch/
+js/
+web/
