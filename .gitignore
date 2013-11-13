@@ -1,8 +1,10 @@
 .DS_Store
+*.csv
 *.json
 *.mindnode
 *.pxm
 *.pyc
+*.R*
 assets/
 d3-branch/
 js/
