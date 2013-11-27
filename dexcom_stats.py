@@ -388,6 +388,20 @@ class DexcomStats():
 
 		self.days[yesterday].print_summary()
 
+	def print_n_summaries(self, n):
+		"""Call DexcomDay.print_summary() method for n most recent days of data."""
+
+		dates = []
+
+		m = len(self.dates) - 1
+
+		while n >= 0:
+			dates.append(self.dates[m - n])
+			n -= 1
+
+		for d in dates:
+			self.days[d].print_summary()
+
 class GVI():
 	"""Glycemic Variability Index."""
 	"""As described here: http://www.diabetesmine.com/2012/11/a-new-view-of-glycemic-variability-how-long-is-your-line.html"""
@@ -722,12 +736,16 @@ def main():
     parser.add_argument('-m', '--months', action='store_true', dest="months", help='generate dexcom_months.json output file')
     parser.add_argument('-y', '--years', action='store_true', dest="years", help='generate dexcom_years.json output file')
     parser.add_argument('-p', '--pretty', action='store_true', dest="pretty", help='pretty print JSON')
+    parser.add_argument('-n', '--print_n', action='store', type=int, help='print daily summaries for n most recent days')
 
     args = parser.parse_args()
 
     d = DexcomStats(args.dex_name, [args.weeks, args.months, args.years])
     d.print_unit_JSON('days', args.pretty)
-    d.print_yesterday_summary()
+    if args.print_n:
+    	d.print_n_summaries(args.print_n - 1)
+    else:
+    	d.print_yesterday_summary()
     # d.print_unit_summaries('days')
     if args.weeks:
     	d.print_unit_JSON('weeks', args.pretty)
