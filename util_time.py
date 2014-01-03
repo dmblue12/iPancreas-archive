@@ -35,7 +35,7 @@ class UserTime(tzinfo):
 		elif dt.year == 2013:
 			start = datetime(2013, 3, 10, 2, 0, 0)
 			end = datetime(2013, 11, 3, 2, 0, 0)
-		elif dt.year == 2013:
+		elif dt.year == 2014:
 			start = datetime(2014, 3, 9, 2, 0, 0)
 			end = datetime(2014, 11, 2, 2, 0, 0)
 
