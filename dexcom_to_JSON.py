@@ -115,10 +115,16 @@ def main():
 
     args = parser.parse_args()
 
+    dexcom_files = []
+
+    for i, thing in enumerate(args.dexcom_file):
+        if i % 2 == 0:
+            dexcom_files.append([thing, args.dexcom_file[i + 1]])
+
     if args.output:
-        d = StudioReader(args.dexcom_file, args.timezone, args.pretty, "", args.output)
+        d = StudioReader(dexcom_files, args.timezone, args.pretty, "", args.output)
     else:
-        d = StudioReader(args.dexcom_file, args.timezone, args.pretty, "")
+        d = StudioReader(dexcom_files, args.timezone, args.pretty, "")
 
 if __name__ == '__main__':
     main()
