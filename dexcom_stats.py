@@ -9,12 +9,12 @@ import util_time
 class DexcomStats():
 	"""Compute summary statistics for a Dexcom JSON file."""
 
-	def __init__(self, dex, options):
+	def __init__(self, dex, out_path, options):
 
 		with open(dex, 'rb') as f:
 			self.dexcom = json.load(f)
 
-		self.path = dex.rstrip('dexcom.json')
+		self.path = out_path
 
 		self.calibrations = self.dexcom['Calibrations']
 
@@ -732,6 +732,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='Process the input Dexcom JSON file and output one or more time unit-batched JSON files with summary statistics.')
     parser.add_argument('dex_name', action = 'store', help='name of Dexcom .json file')
+    parser.add_argument('output_path', action = 'store', help='path to desired output file')
     parser.add_argument('-w', '--weeks', action='store_true', dest="weeks", help='generate dexcom_weeks.json output file')
     parser.add_argument('-m', '--months', action='store_true', dest="months", help='generate dexcom_months.json output file')
     parser.add_argument('-y', '--years', action='store_true', dest="years", help='generate dexcom_years.json output file')
@@ -740,7 +741,7 @@ def main():
 
     args = parser.parse_args()
 
-    d = DexcomStats(args.dex_name, [args.weeks, args.months, args.years])
+    d = DexcomStats(args.dex_name, args.output_path, [args.weeks, args.months, args.years])
     d.print_unit_JSON('days', args.pretty)
     if args.print_n:
     	d.print_n_summaries(args.print_n - 1)
