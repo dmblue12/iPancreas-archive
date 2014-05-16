@@ -1,3 +1,7 @@
+# IMPORTANT
+
+This repository is **deprecated** as of May 15th, 2014. I'm updating the tools contained within in separate repositories, starting with [iPancreas-dexcom](https://github.com/jebeck/iPancreas-dexcom) (for Dexcom data utilities) and [iPancreas-data](https://github.com/jebeck/iPancreas-data) (solely to host diabetes data files released for public consumption).
+
 ## Repository Map
 
 - Here on the `master` branch I'm developing the Python modules for munging Dexcom data (and soon, Animas Ping export files).
